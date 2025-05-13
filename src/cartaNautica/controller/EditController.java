@@ -25,6 +25,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Navigation;
@@ -147,6 +149,12 @@ public class EditController implements Initializable {
         birthDatePicker.setOnMouseExited(event -> {
             birthDatePicker.setCursor(Cursor.DEFAULT);
         });
+        
+        // Configurar el pulsado del enter al guardar cambios
+        emailField.setOnKeyPressed(this::pressEnter);
+        passwordField.setOnKeyPressed(this::pressEnter);
+        passwordVisibleField.setOnKeyPressed(this::pressEnter);
+        birthDatePicker.setOnKeyPressed(this::pressEnter);
     }    
 
     @FXML
@@ -259,4 +267,10 @@ public class EditController implements Initializable {
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.show();
     }
+    
+    private void pressEnter(KeyEvent event) {
+    if (event.getCode() == KeyCode.ENTER && !confirmButton.isDisabled()) {
+        confirmar(new ActionEvent());
+    }
+}
 }

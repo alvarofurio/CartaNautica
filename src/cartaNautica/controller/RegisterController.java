@@ -28,6 +28,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -148,6 +150,13 @@ public class RegisterController implements Initializable {
         birthDatePicker.setOnMouseExited(event -> {
             birthDatePicker.setCursor(Cursor.DEFAULT);
         });
+        
+        // Configurar el pulsado del enter al registrarse
+        nicknameField.setOnKeyPressed(this::pressEnter);
+        emailField.setOnKeyPressed(this::pressEnter);
+        passwordField.setOnKeyPressed(this::pressEnter);
+        passwordVisibleField.setOnKeyPressed(this::pressEnter);
+        birthDatePicker.setOnKeyPressed(this::pressEnter);
     }    
 
     @FXML
@@ -270,4 +279,10 @@ public class RegisterController implements Initializable {
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.show();
     }
+    
+    private void pressEnter(KeyEvent event) {
+    if (event.getCode() == KeyCode.ENTER && !registerButton.isDisabled()) {
+        registrarse(new ActionEvent());
+    }
+}
 }

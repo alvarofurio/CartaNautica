@@ -7,8 +7,18 @@ package cartaNautica.controller;
 import cartaNautica.PoiUPVApp;
 import java.io.IOException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
-import javafx.beans.binding.Bindings;
+import java.util.stream.Collectors;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,87 +26,405 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import model.Session;
+import model.User;
 
 /**
- * FXML Controller class
+ * FXML Controller class para la vista de resultados
  *
- * @author hugol
+ * @author Jose
  */
 public class ResultsController implements Initializable {
 
     @FXML
     private Menu profileMenu;
     @FXML
-    private TableView<?> problemsTable;
-    @FXML
-    private TableColumn<?, ?> problemColumn;
-    @FXML
-    private TableColumn<?, ?> questionColumn;
-    @FXML
-    private Button solveButton;
-    @FXML
-    private Button randomButton;
-    @FXML
     private Button backButton;
+    @FXML
+    private DatePicker fechaInicioPicker;
+    @FXML
+    private Button aplicarFiltroButton;
+    @FXML
+    private Label totalAciertosLabel;
+    @FXML
+    private Label totalFallosLabel;
+    @FXML
+    private Label porcentajeAciertosLabel;
+    @FXML
+    private Label numeroSesionesLabel;
+    @FXML
+    private TabPane resultadosTabPane;
+    @FXML
+    private TableView<Session> sesionesTable;
+    @FXML
+    private TableColumn<Session, String> fechaColumn;
+    @FXML
+    private TableColumn<Session, String> horaColumn;
+    @FXML
+    private TableColumn<Session, Integer> aciertosColumn;
+    @FXML
+    private TableColumn<Session, Integer> fallosColumn;
+    @FXML
+    private TableColumn<Session, Integer> totalProblemasColumn;
+    @FXML
+    private LineChart<String, Number> acumuladoChart;
+    @FXML
+    private CategoryAxis fechaEjeX;
+    @FXML
+    private NumberAxis cantidadEjeY;
+    
+    // Formato para mostrar la fecha y hora
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    
+    // Lista de sesiones filtradas
+    private List<Session> sesionesFiltradas;
+    
+    // Usuario actual
+    private User currentUser;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Cursor al pasar sobre el solveButton
-        solveButton.setOnMouseEntered(event -> {
-            solveButton.setCursor(Cursor.HAND);
-        });
-        solveButton.setOnMouseExited(event -> {
-            solveButton.setCursor(Cursor.DEFAULT);
-        });
+        // Obtener usuario actual
+        currentUser = PoiUPVApp.getCurrentUser();
         
-        // Cursor al pasar sobre el randomButton
-        randomButton.setOnMouseEntered(event -> {
-            randomButton.setCursor(Cursor.HAND);
-        });
-        randomButton.setOnMouseExited(event -> {
-            randomButton.setCursor(Cursor.DEFAULT);
-        });
+        // Configurar menú de perfil
+        if (currentUser != null) {
+            profileMenu.setText(currentUser.getNickName());
+        }
         
-        // resultsButton 
+        // Configurar DatePicker con la fecha actual menos 30 días por defecto
+        fechaInicioPicker.setValue(LocalDate.now().minusDays(30));
+        
+        // Configurar comportamiento del cursor sobre los botones
+        configurarCursores();
+        
+        // Configurar tabla de sesiones
+        configurarTabla();
+        
+        // Configurar gráfica de resultados acumulados
+        configurarGrafica();
+        
+        // Cargar datos iniciales
+        cargarDatos();
+    }
+    
+    /**
+     * Configura los cursores para los botones
+     */
+    private void configurarCursores() {
+        // Cursor al pasar sobre el backButton
         backButton.setOnMouseEntered(event -> {
             backButton.setStyle("-fx-background-color: #0096C9");
+            backButton.setCursor(Cursor.HAND);
         });
         backButton.setOnMouseExited(event -> {
             backButton.setStyle("-fx-background-color: transparent");
+            backButton.setCursor(Cursor.DEFAULT);
         });
-       
-        // Botón deshabilitado mientras no tengas un problema seleccionado
-        solveButton.disableProperty().bind(Bindings.equal(-1,problemsTable.getSelectionModel().selectedIndexProperty()));
-    }    
+        
+        // Cursor al pasar sobre el aplicarFiltroButton
+        aplicarFiltroButton.setOnMouseEntered(event -> {
+            aplicarFiltroButton.setCursor(Cursor.HAND);
+        });
+        aplicarFiltroButton.setOnMouseExited(event -> {
+            aplicarFiltroButton.setCursor(Cursor.DEFAULT);
+        });
+    }
+    
+    /**
+     * Configura la tabla de sesiones
+     */
+    private void configurarTabla() {
+        // Configurar columnas de la tabla
+        fechaColumn.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(
+                    cellData.getValue().getTimeStamp().format(dateFormatter)
+            );
+        });
+        
+        horaColumn.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(
+                    cellData.getValue().getTimeStamp().format(timeFormatter)
+            );
+        });
+        
+        aciertosColumn.setCellValueFactory(cellData -> {
+            return new SimpleIntegerProperty(cellData.getValue().getHits()).asObject();
+        });
+        
+        fallosColumn.setCellValueFactory(cellData -> {
+            return new SimpleIntegerProperty(cellData.getValue().getFaults()).asObject();
+        });
+        
+        totalProblemasColumn.setCellValueFactory(cellData -> {
+            return new SimpleIntegerProperty(
+                    cellData.getValue().getHits() + cellData.getValue().getFaults()
+            ).asObject();
+        });
+        
+        // Colorear celdas de aciertos en verde
+        aciertosColumn.setCellFactory(column -> {
+            return new TableCell<Session, Integer>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    
+                    if (item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(item.toString());
+                        setTextFill(Color.GREEN);
+                        setStyle("-fx-font-weight: bold;");
+                    }
+                }
+            };
+        });
+        
+        // Colorear celdas de fallos en rojo
+        fallosColumn.setCellFactory(column -> {
+            return new TableCell<Session, Integer>() {
+                @Override
+                protected void updateItem(Integer item, boolean empty) {
+                    super.updateItem(item, empty);
+                    
+                    if (item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        setText(item.toString());
+                        setTextFill(Color.RED);
+                        setStyle("-fx-font-weight: bold;");
+                    }
+                }
+            };
+        });
+    }
+    
+    /**
+     * Configura la gráfica de resultados acumulados
+     */
+    private void configurarGrafica() {
+        // Configurar ejes
+        fechaEjeX.setLabel("Fecha");
+        cantidadEjeY.setLabel("Cantidad");
+        
+        // Configurar título
+        acumuladoChart.setTitle("Progreso Acumulado");
+        acumuladoChart.setAnimated(false);
+        acumuladoChart.setCreateSymbols(true);
+        
+        // Limpiar cualquier dato previo
+        acumuladoChart.getData().clear();
+    }
+    
+    /**
+     * Carga los datos del usuario y actualiza la vista
+     */
+    private void cargarDatos() {
+        if (currentUser == null) {
+            error("Error", "Usuario no encontrado", "No se ha encontrado un usuario válido.");
+            return;
+        }
+        
+        try {
+            // Filtrar sesiones por fecha
+            filtrarSesiones();
+            
+            // Actualizar estadísticas
+            actualizarEstadisticas();
+            
+            // Actualizar tabla
+            actualizarTabla();
+            
+            // Actualizar gráfica
+            actualizarGrafica();
+        } catch (Exception e) {
+            error("Error", "Error al cargar datos", "Se produjo un error al cargar los datos: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Filtra las sesiones según la fecha seleccionada
+     */
+    private void filtrarSesiones() {
+        LocalDate fechaInicio = fechaInicioPicker.getValue();
+        if (fechaInicio == null) {
+            fechaInicio = LocalDate.now().minusDays(30); // Por defecto últimos 30 días
+        }
+        
+        LocalDateTime fechaInicioDateTime = fechaInicio.atStartOfDay();
+        
+        // Obtener todas las sesiones del usuario actual
+        List<Session> todasLasSesiones = currentUser.getSessions();
+        
+        // Verificar si hay sesiones
+        if (todasLasSesiones == null || todasLasSesiones.isEmpty()) {
+            sesionesFiltradas = new ArrayList<>();
+            return;
+        }
+        
+        // Filtrar sesiones por fecha
+        sesionesFiltradas = todasLasSesiones.stream()
+                .filter(session -> session.getTimeStamp().isAfter(fechaInicioDateTime))
+                .sorted(Comparator.comparing(Session::getTimeStamp))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Actualiza las estadísticas con los datos filtrados
+     */
+    private void actualizarEstadisticas() {
+        int totalAciertos = 0;
+        int totalFallos = 0;
+        int totalSesiones = sesionesFiltradas.size();
+        
+        for (Session sesion : sesionesFiltradas) {
+            totalAciertos += sesion.getHits();
+            totalFallos += sesion.getFaults();
+        }
+        
+        // Actualizar etiquetas
+        totalAciertosLabel.setText(String.valueOf(totalAciertos));
+        totalFallosLabel.setText(String.valueOf(totalFallos));
+        
+        // Calcular porcentaje de aciertos
+        double porcentaje = 0;
+        if (totalAciertos + totalFallos > 0) {
+            porcentaje = (double) totalAciertos / (totalAciertos + totalFallos) * 100;
+        }
+        
+        porcentajeAciertosLabel.setText(String.format("%.1f%%", porcentaje));
+        numeroSesionesLabel.setText(String.valueOf(totalSesiones));
+    }
+    
+    /**
+     * Actualiza la tabla con los datos filtrados
+     */
+    private void actualizarTabla() {
+        ObservableList<Session> sesionesObservable = FXCollections.observableArrayList(sesionesFiltradas);
+        sesionesTable.setItems(sesionesObservable);
+    }
+    
+    /**
+     * Actualiza la gráfica con los datos filtrados
+     */
+    private void actualizarGrafica() {
+        // Limpiar datos anteriores
+        acumuladoChart.getData().clear();
+        
+        // Si no hay sesiones, no hay nada que mostrar
+        if (sesionesFiltradas.isEmpty()) {
+            return;
+        }
+        
+        // Series para aciertos y fallos acumulados
+        XYChart.Series<String, Number> aciertosAcumulados = new XYChart.Series<>();
+        aciertosAcumulados.setName("Aciertos acumulados");
+        
+        XYChart.Series<String, Number> fallosAcumulados = new XYChart.Series<>();
+        fallosAcumulados.setName("Fallos acumulados");
+        
+        int acumuladoAciertos = 0;
+        int acumuladoFallos = 0;
+        
+        // Rellenar datos
+        for (Session sesion : sesionesFiltradas) {
+            String fechaStr = sesion.getTimeStamp().format(dateFormatter);
+            
+            acumuladoAciertos += sesion.getHits();
+            acumuladoFallos += sesion.getFaults();
+            
+            aciertosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoAciertos));
+            fallosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoFallos));
+        }
+        
+        // Añadir series a la gráfica
+        acumuladoChart.getData().addAll(aciertosAcumulados, fallosAcumulados);
+        
+        // Aplicar estilos directamente a las series
+        for (int i = 0; i < acumuladoChart.getData().size(); i++) {
+            XYChart.Series<String, Number> series = acumuladoChart.getData().get(i);
+            
+            // La primera serie (aciertos) en verde, la segunda (fallos) en rojo
+            String color = (i == 0) ? "#4caf50" : "#f44336";
+            series.getNode().setStyle("-fx-stroke: " + color + "; -fx-stroke-width: 3px;");
+            
+            // Aplicar color a los puntos de datos
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                data.getNode().setStyle("-fx-background-color: " + color + "; -fx-background-radius: 5px;");
+            }
+        }
+    }
 
+    /**
+     * Maneja el evento de aplicar filtro
+     * @param event El evento de acción
+     */
+    @FXML
+    private void aplicarFiltro(ActionEvent event) {
+        cargarDatos();
+    }
+
+    /**
+     * Navega a la vista de problemas
+     * @param event El evento de acción
+     * @throws java.io.IOException Si ocurre un error al cargar la vista
+     */
+    @FXML
+    private void goToProblems(ActionEvent event) throws IOException {
+        setScene("../view/ProblemView.fxml", "Problemas");
+    }
+
+    /**
+     * Abre la vista de edición de perfil
+     * @param event El evento de acción
+     * @throws java.io.IOException Si ocurre un error al cargar la vista
+     */
     @FXML
     private void editarOn(ActionEvent event) throws IOException {
-        PoiUPVApp.setPrev(false);
+        PoiUPVApp.setPrev(false); // Indicar que la vista anterior es ResultsView
         setScene("../view/EditView.fxml", "Editar perfil");
     }
     
+    /**
+     * Cierra la sesión actual
+     * @param event El evento de acción
+     * @throws java.io.IOException Si ocurre un error al cargar la vista
+     */
     @FXML
     private void cerrarSesiOn(ActionEvent event) throws IOException{
         PoiUPVApp.setCurrentUser(null);
         setScene("../view/LoginView.fxml", "Inicio de sesión");
     }
-
-    @FXML
-    private void goToProblems(ActionEvent event) throws IOException {
-        setScene("../view/ProblemView.fxml", "Editar perfil");
-    }
     
-    public void setScene(String ruta, String clave) throws IOException  {
+    /**
+     * Cambia la escena actual
+     * @param ruta Ruta del archivo FXML a cargar
+     * @param clave Título para la ventana
+     * @throws IOException Si ocurre un error al cargar la vista
+     */
+    public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -106,6 +434,12 @@ public class ResultsController implements Initializable {
         miStage.show();
     }
     
+    /**
+     * Muestra un mensaje de error
+     * @param title Título del diálogo
+     * @param header Encabezado del diálogo
+     * @param content Contenido del diálogo
+     */
     private void error(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -113,5 +447,4 @@ public class ResultsController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    //HOla
 }

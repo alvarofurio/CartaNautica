@@ -23,6 +23,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import model.NavDAOException;
@@ -90,6 +92,11 @@ public class LoginController implements Initializable {
         visibilityButton.setOnMouseExited(event -> {
             visibilityButton.setCursor(Cursor.DEFAULT);
         });
+        
+        // configurar el pulsado del enter para iniciar sesión
+        nicknameField.setOnKeyPressed(this::pressEnter);
+        passwordField.setOnKeyPressed(this::pressEnter);
+        passwordVisibleField.setOnKeyPressed(this::pressEnter);
     }
     
     /**
@@ -158,4 +165,14 @@ public class LoginController implements Initializable {
         passwordVisibleField.setManaged(passwordVisible); // Cambiar la imagen del ojo según el estado
         eyeImageView.setImage(passwordVisible ? eyeOpenImage : eyeClosedImage);
     }
+      
+    private void pressEnter(KeyEvent event) {
+    if (event.getCode() == KeyCode.ENTER && !loginButton.isDisabled()) {
+        try {
+            iniciarSesion(new ActionEvent());
+        } catch (NavDAOException | IOException e) {
+            error("Error", "Error al iniciar sesión", e.getMessage());
+        }
+    }
+}
 }
