@@ -27,6 +27,7 @@ public class PoiUPVApp extends Application {
         Parent root;
         FXMLLoader loader;
         miStage = stage;
+        
         //LoginView
         loader = new FXMLLoader(getClass().getResource("view/LoginView.fxml"));
         root = loader.load();

@@ -136,10 +136,7 @@ public class LoginController implements Initializable {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         Stage miStage = PoiUPVApp.getStage();
-        double h = miStage.getHeight();
-        double w = miStage.getWidth();
-        miStage.setHeight(h);
-        miStage.setWidth(w);
+        if (clave.equals("Registro")){miStage.setHeight(700);miStage.setWidth(500);}
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.show();

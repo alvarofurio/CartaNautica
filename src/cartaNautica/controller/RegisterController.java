@@ -70,6 +70,12 @@ public class RegisterController implements Initializable {
     @FXML
     private Button visibilityButton;
     
+    // Nuevos campos para confirmar contraseña
+    @FXML
+    private PasswordField confirmPasswordField;
+    @FXML
+    private TextField confirmPasswordVisibleField;
+    
     private Image avatarImage;
     private Image eyeOpenImage;
     private Image eyeClosedImage;
@@ -80,14 +86,29 @@ public class RegisterController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        registerButton.disableProperty().bind(Bindings.or(birthDatePicker.valueProperty().isNull(),Bindings.or(emailField.textProperty().isEmpty(),Bindings.or(nicknameField.textProperty().isEmpty(),passwordField.textProperty().isEmpty()))));
+        // Deshabilitar el botón de registro si algún campo está vacío
+        registerButton.disableProperty().bind(
+            Bindings.or(
+                birthDatePicker.valueProperty().isNull(),
+                Bindings.or(
+                    emailField.textProperty().isEmpty(),
+                    Bindings.or(
+                        nicknameField.textProperty().isEmpty(),
+                        Bindings.or(
+                            passwordField.textProperty().isEmpty(),
+                            confirmPasswordField.textProperty().isEmpty()
+                        )
+                    )
+                )
+            )
+        );
         
         //Valores por defecto de los campos fecha nacimiento y avatar
         birthDatePicker.setValue(LocalDate.now().minusYears(16));
         avatarImage = new Image(getClass().getResourceAsStream("/resources/default_avatar.png"));
         avatarImageView.setImage(avatarImage);
         
-        // Listeners
+        // Listeners para quitar estilos de error cuando cambian los campos
         nicknameField.textProperty().addListener((obs, oldVal, newVal) -> {
             nicknameField.setStyle("");
         });
@@ -102,15 +123,35 @@ public class RegisterController implements Initializable {
             visibilityButton.setStyle("-fx-background-color: #FFFFFF");
         });
         
+        // Listener para campo de confirmar contraseña
+        confirmPasswordField.textProperty().addListener((obs, oldVal, newVal) -> {
+            confirmPasswordField.setStyle("");
+            confirmPasswordVisibleField.setStyle("");
+        });
+        
         birthDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             birthDatePicker.setStyle("");
         });
         
-        // Visibilidad contrasenya
+        // Vincular campos de contraseña con sus versiones visibles
+        passwordField.textProperty().bindBidirectional(passwordVisibleField.textProperty());
+        confirmPasswordField.textProperty().bindBidirectional(confirmPasswordVisibleField.textProperty());
+        
+        // Cargar imágenes de ojo abierto/cerrado
         eyeOpenImage = new Image(getClass().getResourceAsStream("/resources/eye_open.png"));
         eyeClosedImage = new Image(getClass().getResourceAsStream("/resources/eye_closed.png"));
-        passwordField.textProperty().bindBidirectional(passwordVisibleField.textProperty());
         
+        // Configuración de cursores para botones
+        configurarCursores();
+        
+        // Configurar el pulsado del enter al registrarse
+        configurarEnterKeyPressed();
+    }
+    
+    /**
+     * Configura los cursores para todos los elementos interactivos
+     */
+    private void configurarCursores() {
         // Cursor al pasar sobre el registerButton
         registerButton.setOnMouseEntered(event -> {
             registerButton.setCursor(Cursor.HAND);
@@ -150,15 +191,24 @@ public class RegisterController implements Initializable {
         birthDatePicker.setOnMouseExited(event -> {
             birthDatePicker.setCursor(Cursor.DEFAULT);
         });
-        
-        // Configurar el pulsado del enter al registrarse
+    }
+    
+    /**
+     * Configura el evento de pulsado de Enter para todos los campos
+     */
+    private void configurarEnterKeyPressed() {
         nicknameField.setOnKeyPressed(this::pressEnter);
         emailField.setOnKeyPressed(this::pressEnter);
         passwordField.setOnKeyPressed(this::pressEnter);
         passwordVisibleField.setOnKeyPressed(this::pressEnter);
+        confirmPasswordField.setOnKeyPressed(this::pressEnter);
+        confirmPasswordVisibleField.setOnKeyPressed(this::pressEnter);
         birthDatePicker.setOnKeyPressed(this::pressEnter);
-    }    
+    }
 
+    /**
+     * Abre un diálogo para seleccionar una imagen de avatar
+     */
     @FXML
     private void seleccionarImagen(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -173,11 +223,15 @@ public class RegisterController implements Initializable {
         }
     }
 
+    /**
+     * Realiza el registro del usuario tras validar todos los campos
+     */
     @FXML
     private void registrarse(ActionEvent event) {
         String nickname = nicknameField.getText().trim();
         String email = emailField.getText().trim();
         String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
         LocalDate birthDate = birthDatePicker.getValue();
         boolean existsError = false;
         String error = "";
@@ -190,6 +244,7 @@ public class RegisterController implements Initializable {
         } else {
             nicknameField.setStyle("");
         }
+        
         // Validación del email
         if (!User.checkEmail(email)) {
             existsError=true;
@@ -198,6 +253,7 @@ public class RegisterController implements Initializable {
         } else {
             emailField.setStyle("");
         }
+        
         // Validación de la contraseña
         if (!User.checkPassword(password)) {
             existsError=true;
@@ -211,11 +267,22 @@ public class RegisterController implements Initializable {
             visibilityButton.setStyle("-fx-background-color: #FFFFFF");
         }
         
+        // Validación de coincidencia de contraseñas
+        if (!password.equals(confirmPassword)) {
+            existsError=true;
+            error += "Las contraseñas no coinciden.\n\n";
+            confirmPasswordField.setStyle("-fx-background-color: #FCE5E0");
+            confirmPasswordVisibleField.setStyle("-fx-background-color: #FCE5E0");
+        } else {
+            confirmPasswordField.setStyle("");
+            confirmPasswordVisibleField.setStyle("");
+        }
+        
         // Validación de la fecha de nacimiento
         if (birthDate.plusYears(16).isAfter(LocalDate.now())) {
             existsError=true;
             error += "Debe ser mayor de 16 años para registrarse.\n\n";
-            //Cambiar color cuándo sepamos cómo
+            birthDatePicker.setStyle("-fx-background-color: #FCE5E0");
         } else {
             birthDatePicker.setStyle("");
         }
@@ -226,8 +293,15 @@ public class RegisterController implements Initializable {
         }
         
         try {
-            // Registrar usuario utilizando Navigation
+            // Verificar si el nickname ya existe en el sistema
             Navigation navigation = Navigation.getInstance();
+            if (navigation.exitsNickName(nickname)) {
+                error("Error", "Nombre de usuario no disponible", "El nombre de usuario ya está en uso. Por favor, elija otro.");
+                nicknameField.setStyle("-fx-background-color: #FCE5E0");
+                return;
+            }
+            
+            // Registrar usuario utilizando Navigation
             User user = navigation.registerUser(nickname, email, password, avatarImage, birthDate);
             informacion("Éxito", "Registro completado", "Se ha registrado correctamente.");
             setScene("../view/LoginView.fxml","Inicio de sesión");
@@ -236,11 +310,17 @@ public class RegisterController implements Initializable {
         }
     }
 
+    /**
+     * Vuelve a la pantalla de inicio de sesión
+     */
     @FXML
     private void volver(ActionEvent event) throws IOException {
         setScene("../view/LoginView.fxml","Inicio de sesión");
     }
     
+    /**
+     * Muestra un mensaje de error
+     */
     private void error(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -252,6 +332,9 @@ public class RegisterController implements Initializable {
         alert.showAndWait();
     }
     
+    /**
+     * Muestra un mensaje de información
+     */
     private void informacion(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -260,29 +343,43 @@ public class RegisterController implements Initializable {
         alert.showAndWait();
     }
 
+    /**
+     * Cambia la visibilidad solo del campo de contraseña principal
+     */
     @FXML
     private void cambiarVisibilidad(ActionEvent event) {
         passwordVisible = !passwordVisible;
+        
+        // Cambiar visibilidad SOLO del campo de contraseña principal
         passwordField.setVisible(!passwordVisible);
         passwordField.setManaged(!passwordVisible);
         passwordVisibleField.setVisible(passwordVisible);
-        passwordVisibleField.setManaged(passwordVisible); // Cambiar la imagen del ojo según el estado
+        passwordVisibleField.setManaged(passwordVisible);
+        
+        // Cambiar la imagen del ojo según el estado
         eyeImageView.setImage(passwordVisible ? eyeOpenImage : eyeClosedImage);
     }
     
+    /**
+     * Cambia a la escena especificada
+     */
     public void setScene(String ruta, String clave) throws IOException  {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         Stage miStage = PoiUPVApp.getStage();
+        miStage.setHeight(550);miStage.setWidth(500);
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.show();
     }
     
+    /**
+     * Maneja el evento de presionar Enter en cualquier campo
+     */
     private void pressEnter(KeyEvent event) {
-    if (event.getCode() == KeyCode.ENTER && !registerButton.isDisabled()) {
-        registrarse(new ActionEvent());
+        if (event.getCode() == KeyCode.ENTER && !registerButton.isDisabled()) {
+            registrarse(new ActionEvent());
+        }
     }
-}
 }
