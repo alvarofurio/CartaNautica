@@ -20,7 +20,14 @@
          <children>
             <HBox prefHeight="15.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" HBox.hgrow="ALWAYS">
                <children>
-                  <Button fx:id="resultsButton" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#goToResults" prefHeight="2.0" style="-fx-background-color: transparent;" text="Resultados" textFill="WHITE" />
+                  <Button fx:id="resultsButton" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#goToResults" prefHeight="2.0" style="-fx-background-color: transparent;" text="Resultados" textFill="WHITE">
+                     <graphic>
+                        <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/stonkss.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                </children>
                <padding>
                   <Insets left="6.0" />
