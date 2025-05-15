@@ -88,14 +88,11 @@ public class ResultsController implements Initializable {
     @FXML
     private NumberAxis cantidadEjeY;
     
-    // Formato para mostrar la fecha y hora
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     
-    // Lista de sesiones filtradas
     private List<Session> sesionesFiltradas;
     
-    // Usuario actual
     private User currentUser;
 
     /**
@@ -106,39 +103,18 @@ public class ResultsController implements Initializable {
         // Obtener usuario actual
         currentUser = PoiUPVApp.getCurrentUser();
         
-        // Configurar menú de perfil
-        if (currentUser != null) {
-            profileMenu.setText(currentUser.getNickName());
-        }
+        profileMenu.setText(currentUser.getNickName());
         
         // Configurar DatePicker con la fecha actual menos 30 días por defecto
         fechaInicioPicker.setValue(LocalDate.now().minusDays(30));
         
-        // Configurar comportamiento del cursor sobre los botones
-        configurarCursores();
-        
-        // Configurar tabla de sesiones
-        configurarTabla();
-        
-        // Configurar gráfica de resultados acumulados
-        configurarGrafica();
-        
-        // Cargar datos iniciales
-        cargarDatos();
-    }
-    
-    /**
-     * Configura los cursores para los botones
-     */
-    private void configurarCursores() {
         // Cursor al pasar sobre el backButton
         backButton.setOnMouseEntered(event -> {
             backButton.setStyle("-fx-background-color: #0096C9");
-            backButton.setCursor(Cursor.HAND);
+
         });
         backButton.setOnMouseExited(event -> {
             backButton.setStyle("-fx-background-color: transparent");
-            backButton.setCursor(Cursor.DEFAULT);
         });
         
         // Cursor al pasar sobre el aplicarFiltroButton
@@ -148,6 +124,15 @@ public class ResultsController implements Initializable {
         aplicarFiltroButton.setOnMouseExited(event -> {
             aplicarFiltroButton.setCursor(Cursor.DEFAULT);
         });
+        
+        // Configurar tabla de sesiones
+        configurarTabla();
+        
+        // Configurar gráfica: Limpiar cualquier dato previo
+        //acumuladoChart.getData().clear();
+        
+        // Cargar datos iniciales
+        cargarDatos();
     }
     
     /**
@@ -155,86 +140,15 @@ public class ResultsController implements Initializable {
      */
     private void configurarTabla() {
         // Configurar columnas de la tabla
-        fechaColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(
-                    cellData.getValue().getTimeStamp().format(dateFormatter)
-            );
-        });
+        fechaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTimeStamp().format(dateFormatter)));
         
-        horaColumn.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(
-                    cellData.getValue().getTimeStamp().format(timeFormatter)
-            );
-        });
+        horaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTimeStamp().format(timeFormatter)));
+
+        aciertosColumn.setCellValueFactory(cellData-> new SimpleIntegerProperty(cellData.getValue().getHits()).asObject());
         
-        aciertosColumn.setCellValueFactory(cellData -> {
-            return new SimpleIntegerProperty(cellData.getValue().getHits()).asObject();
-        });
+        fallosColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getFaults()).asObject());
         
-        fallosColumn.setCellValueFactory(cellData -> {
-            return new SimpleIntegerProperty(cellData.getValue().getFaults()).asObject();
-        });
-        
-        totalProblemasColumn.setCellValueFactory(cellData -> {
-            return new SimpleIntegerProperty(
-                    cellData.getValue().getHits() + cellData.getValue().getFaults()
-            ).asObject();
-        });
-        
-        // Colorear celdas de aciertos en verde
-        aciertosColumn.setCellFactory(column -> {
-            return new TableCell<Session, Integer>() {
-                @Override
-                protected void updateItem(Integer item, boolean empty) {
-                    super.updateItem(item, empty);
-                    
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item.toString());
-                        setTextFill(Color.GREEN);
-                        setStyle("-fx-font-weight: bold;");
-                    }
-                }
-            };
-        });
-        
-        // Colorear celdas de fallos en rojo
-        fallosColumn.setCellFactory(column -> {
-            return new TableCell<Session, Integer>() {
-                @Override
-                protected void updateItem(Integer item, boolean empty) {
-                    super.updateItem(item, empty);
-                    
-                    if (item == null || empty) {
-                        setText(null);
-                        setStyle("");
-                    } else {
-                        setText(item.toString());
-                        setTextFill(Color.RED);
-                        setStyle("-fx-font-weight: bold;");
-                    }
-                }
-            };
-        });
-    }
-    
-    /**
-     * Configura la gráfica de resultados acumulados
-     */
-    private void configurarGrafica() {
-        // Configurar ejes
-        fechaEjeX.setLabel("Fecha");
-        cantidadEjeY.setLabel("Cantidad");
-        
-        // Configurar título
-        acumuladoChart.setTitle("Progreso Acumulado");
-        acumuladoChart.setAnimated(false);
-        acumuladoChart.setCreateSymbols(true);
-        
-        // Limpiar cualquier dato previo
-        acumuladoChart.getData().clear();
+        totalProblemasColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getHits() + cellData.getValue().getFaults()).asObject());
     }
     
     /**
@@ -322,7 +236,7 @@ public class ResultsController implements Initializable {
      * Actualiza la tabla con los datos filtrados
      */
     private void actualizarTabla() {
-        ObservableList<Session> sesionesObservable = FXCollections.observableArrayList(sesionesFiltradas);
+        ObservableList<Session> sesionesObservable = FXCollections.observableList(sesionesFiltradas);
         sesionesTable.setItems(sesionesObservable);
     }
     
@@ -332,47 +246,45 @@ public class ResultsController implements Initializable {
     private void actualizarGrafica() {
         // Limpiar datos anteriores
         acumuladoChart.getData().clear();
-        
+
         // Si no hay sesiones, no hay nada que mostrar
-        if (sesionesFiltradas.isEmpty()) {
-            return;
-        }
-        
-        // Series para aciertos y fallos acumulados
-        XYChart.Series<String, Number> aciertosAcumulados = new XYChart.Series<>();
-        aciertosAcumulados.setName("Aciertos acumulados");
-        
-        XYChart.Series<String, Number> fallosAcumulados = new XYChart.Series<>();
-        fallosAcumulados.setName("Fallos acumulados");
-        
-        int acumuladoAciertos = 0;
-        int acumuladoFallos = 0;
-        
-        // Rellenar datos
-        for (Session sesion : sesionesFiltradas) {
-            String fechaStr = sesion.getTimeStamp().format(dateFormatter);
-            
-            acumuladoAciertos += sesion.getHits();
-            acumuladoFallos += sesion.getFaults();
-            
-            aciertosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoAciertos));
-            fallosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoFallos));
-        }
-        
-        // Añadir series a la gráfica
-        acumuladoChart.getData().addAll(aciertosAcumulados, fallosAcumulados);
-        
-        // Aplicar estilos directamente a las series
-        for (int i = 0; i < acumuladoChart.getData().size(); i++) {
-            XYChart.Series<String, Number> series = acumuladoChart.getData().get(i);
-            
-            // La primera serie (aciertos) en verde, la segunda (fallos) en rojo
-            String color = (i == 0) ? "#4caf50" : "#f44336";
-            series.getNode().setStyle("-fx-stroke: " + color + "; -fx-stroke-width: 3px;");
-            
-            // Aplicar color a los puntos de datos
-            for (XYChart.Data<String, Number> data : series.getData()) {
-                data.getNode().setStyle("-fx-background-color: " + color + "; -fx-background-radius: 5px;");
+        if (!sesionesFiltradas.isEmpty()) {
+            // Series para aciertos y fallos acumulados
+            XYChart.Series<String, Number> aciertosAcumulados = new XYChart.Series<>();
+            aciertosAcumulados.setName("Aciertos acumulados");
+
+            XYChart.Series<String, Number> fallosAcumulados = new XYChart.Series<>();
+            fallosAcumulados.setName("Fallos acumulados");
+
+            int acumuladoAciertos = 0;
+            int acumuladoFallos = 0;
+
+            // Rellenar datos
+            for (Session sesion : sesionesFiltradas) {
+                String fechaStr = sesion.getTimeStamp().format(dateFormatter);
+
+                acumuladoAciertos += sesion.getHits();
+                acumuladoFallos += sesion.getFaults();
+
+                aciertosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoAciertos));
+                fallosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoFallos));
+            }
+
+            // Añadir series a la gráfica
+            acumuladoChart.getData().addAll(aciertosAcumulados, fallosAcumulados);
+
+            // Aplicar estilos directamente a las series
+            for (int i = 0; i < acumuladoChart.getData().size(); i++) {
+                XYChart.Series<String, Number> series = acumuladoChart.getData().get(i);
+
+                // La primera serie (aciertos) en verde, la segunda (fallos) en rojo
+                String color = (i == 0) ? "#4caf50" : "#f44336";
+                series.getNode().setStyle("-fx-stroke: " + color + "; -fx-stroke-width: 3px;");
+
+                // Aplicar color a los puntos de datos
+                for (XYChart.Data<String, Number> data : series.getData()) {
+                    data.getNode().setStyle("-fx-background-color: " + color + "; -fx-background-radius: 5px;");
+                }
             }
         }
     }
@@ -418,12 +330,6 @@ public class ResultsController implements Initializable {
         setScene("../view/LoginView.fxml", "Inicio de sesión");
     }
     
-    /**
-     * Cambia la escena actual
-     * @param ruta Ruta del archivo FXML a cargar
-     * @param clave Título para la ventana
-     * @throws IOException Si ocurre un error al cargar la vista
-     */
     public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
@@ -434,12 +340,6 @@ public class ResultsController implements Initializable {
         miStage.show();
     }
     
-    /**
-     * Muestra un mensaje de error
-     * @param title Título del diálogo
-     * @param header Encabezado del diálogo
-     * @param content Contenido del diálogo
-     */
     private void error(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
