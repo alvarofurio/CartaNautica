@@ -29,7 +29,8 @@ import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -83,10 +84,6 @@ public class ResultsController implements Initializable {
     private TableColumn<Session, Integer> totalProblemasColumn;
     @FXML
     private LineChart<String, Number> acumuladoChart;
-    @FXML
-    private CategoryAxis fechaEjeX;
-    @FXML
-    private NumberAxis cantidadEjeY;
     
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -141,9 +138,6 @@ public class ResultsController implements Initializable {
     }
     
    
-    /**
-     * Carga los datos del usuario y actualiza la vista
-     */
     private void cargarDatos() {
                 
         try {
@@ -160,7 +154,8 @@ public class ResultsController implements Initializable {
             actualizarEstadisticas();
             
             // Actualizar tabla
-            actualizarTabla();
+            ObservableList<Session> sesionesObservable = FXCollections.observableList(sesionesFiltradas);
+            sesionesTable.setItems(sesionesObservable);
             
             // Actualizar gráfica
             actualizarGrafica();
@@ -177,6 +172,7 @@ public class ResultsController implements Initializable {
         if (sesiones == null || sesiones.isEmpty()) {
             sesionesFiltradas = new ArrayList<>();
         } else {
+            sesionesFiltradas = new ArrayList<>();
             for (Session i : sesiones) {
                 if (i.getTimeStamp().isAfter(fechaInicio)){ sesionesFiltradas.add(i); }               
             }
@@ -184,125 +180,101 @@ public class ResultsController implements Initializable {
         }
     }
     
-    /**
-     * Actualiza las estadísticas con los datos filtrados
-     */
     private void actualizarEstadisticas() {
-        int totalAciertos = 0;
-        int totalFallos = 0;
-        int totalSesiones = sesionesFiltradas.size();
         
-        for (Session sesion : sesionesFiltradas) {
-            totalAciertos += sesion.getHits();
-            totalFallos += sesion.getFaults();
+        int aciertos = 0;
+        int fallos = 0;
+        int numSesiones = sesionesFiltradas.size();
+        
+        for (Session i : sesionesFiltradas) {
+            aciertos += i.getHits();
+            fallos += i.getFaults();
         }
         
-        // Actualizar etiquetas
-        totalAciertosLabel.setText(String.valueOf(totalAciertos));
-        totalFallosLabel.setText(String.valueOf(totalFallos));
-        
-        // Calcular porcentaje de aciertos
-        double porcentaje = 0;
-        if (totalAciertos + totalFallos > 0) {
-            porcentaje = (double) totalAciertos / (totalAciertos + totalFallos) * 100;
-        }
-        
-        porcentajeAciertosLabel.setText(String.format("%.1f%%", porcentaje));
-        numeroSesionesLabel.setText(String.valueOf(totalSesiones));
-    }
-    
-    /**
-     * Actualiza la tabla con los datos filtrados
-     */
-    private void actualizarTabla() {
-        ObservableList<Session> sesionesObservable = FXCollections.observableList(sesionesFiltradas);
-        sesionesTable.setItems(sesionesObservable);
-    }
-    
-    /**
-     * Actualiza la gráfica con los datos filtrados
-     */
-    private void actualizarGrafica() {
-        // Limpiar datos anteriores
-        acumuladoChart.getData().clear();
+        totalAciertosLabel.setText(String.valueOf(aciertos));
+        totalFallosLabel.setText(String.valueOf(fallos));
 
-        // Si no hay sesiones, no hay nada que mostrar
+        double porcentaje = 0;
+        if (aciertos + fallos > 0) {
+            porcentaje = (double) aciertos / (aciertos + fallos) * 100;
+        }
+        
+        porcentajeAciertosLabel.setText(String.format("%.2f%%", porcentaje));
+        numeroSesionesLabel.setText(String.valueOf(numSesiones));
+    }
+
+    private void actualizarGrafica() {
+        
+        acumuladoChart.getData().clear();
+        
         if (!sesionesFiltradas.isEmpty()) {
             // Series para aciertos y fallos acumulados
-            XYChart.Series<String, Number> aciertosAcumulados = new XYChart.Series<>();
-            aciertosAcumulados.setName("Aciertos");
+            Series<String, Number> fechaAciertos = new Series<>();
+            fechaAciertos.setName("Aciertos");
 
-            XYChart.Series<String, Number> fallosAcumulados = new XYChart.Series<>();
-            fallosAcumulados.setName("Fallos");
+            Series<String, Number> fechaFallos = new Series<>();
+            fechaFallos.setName("Fallos");
 
-            int acumuladoAciertos = 0;
-            int acumuladoFallos = 0;
+            int aciertos = 0;
+            int fallos = 0;
             
-            // Rellenar datos
+            String lastDate = sesionesFiltradas.getFirst().getTimeStamp().format(dateFormatter);
             for (Session sesion : sesionesFiltradas) {
-                String fechaStr = sesion.getTimeStamp().format(dateFormatter);
-
-                acumuladoAciertos += sesion.getHits();
-                acumuladoFallos += sesion.getFaults();
-
-                aciertosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoAciertos));
-                fallosAcumulados.getData().add(new XYChart.Data<>(fechaStr, acumuladoFallos));
-            }
-
-            // Añadir series a la gráfica
-            acumuladoChart.getData().addAll(aciertosAcumulados, fallosAcumulados);
-
-            // Aplicar estilos directamente a las series
-            for (int i = 0; i < acumuladoChart.getData().size(); i++) {
-                XYChart.Series<String, Number> series = acumuladoChart.getData().get(i);
-
-                // La primera serie (aciertos) en verde, la segunda (fallos) en rojo
-                String color = (i == 0) ? "#4caf50" : "#f44336";
-                series.getNode().setStyle("-fx-stroke: " + color + "; -fx-stroke-width: 3px;");
-
-                // Aplicar color a los puntos de datos
-                for (XYChart.Data<String, Number> data : series.getData()) {
-                    data.getNode().setStyle("-fx-background-color: " + color + "; -fx-background-radius: 5px;");
+                
+                String fecha = sesion.getTimeStamp().format(dateFormatter);
+                
+                if (!fecha.equals(lastDate)) {
+                    
+                    fechaAciertos.getData().add(new Data<>(lastDate, aciertos));
+                    fechaFallos.getData().add(new Data<>(lastDate, fallos));
+                    
+                    lastDate = fecha;
                 }
+                    
+                aciertos += sesion.getHits();
+                fallos += sesion.getFaults();
+            }
+            fechaAciertos.getData().add(new Data<>(lastDate, aciertos));
+            fechaFallos.getData().add(new Data<>(lastDate, fallos));
+
+            acumuladoChart.getData().addAll(fechaAciertos, fechaFallos);
+            
+            // Estilo Aciertos
+            Series<String, Number> series = acumuladoChart.getData().get(0);
+            series.getNode().setStyle("-fx-stroke: #4caf50; -fx-stroke-width: 3px;");
+            for (Data<String, Number> data : series.getData()) {
+                data.getNode().setStyle("-fx-background-color: #4caf50; -fx-background-radius: 5px;");
+            }
+            
+            //Estilo Fallos
+            series = acumuladoChart.getData().get(1);
+            series.getNode().setStyle("-fx-stroke: #f44336; -fx-stroke-width: 3px;");
+            for (Data<String, Number> data : series.getData()) {
+                data.getNode().setStyle("-fx-background-color: #f44336; -fx-background-radius: 5px;");
             }
         }
     }
 
-    /**
-     * Maneja el evento de aplicar filtro
-     * @param event El evento de acción
-     */
+
     @FXML
     private void aplicarFiltro(ActionEvent event) {
         cargarDatos();
     }
 
-    /**
-     * Navega a la vista de problemas
-     * @param event El evento de acción
-     * @throws java.io.IOException Si ocurre un error al cargar la vista
-     */
+
     @FXML
     private void goToProblems(ActionEvent event) throws IOException {
         setScene("../view/ProblemView.fxml", "Problemas");
     }
 
-    /**
-     * Abre la vista de edición de perfil
-     * @param event El evento de acción
-     * @throws java.io.IOException Si ocurre un error al cargar la vista
-     */
+
     @FXML
     private void editarOn(ActionEvent event) throws IOException {
         PoiUPVApp.setPrev(false); // Indicar que la vista anterior es ResultsView
         setScene("../view/EditView.fxml", "Editar perfil");
     }
     
-    /**
-     * Cierra la sesión actual
-     * @param event El evento de acción
-     * @throws java.io.IOException Si ocurre un error al cargar la vista
-     */
+
     @FXML
     private void cerrarSesiOn(ActionEvent event) throws IOException{
         PoiUPVApp.setCurrentUser(null);
