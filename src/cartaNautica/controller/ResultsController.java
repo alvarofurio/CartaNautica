@@ -125,20 +125,6 @@ public class ResultsController implements Initializable {
             aplicarFiltroButton.setCursor(Cursor.DEFAULT);
         });
         
-        // Configurar tabla de sesiones
-        configurarTabla();
-        
-        // Configurar gráfica: Limpiar cualquier dato previo
-        //acumuladoChart.getData().clear();
-        
-        // Cargar datos iniciales
-        cargarDatos();
-    }
-    
-    /**
-     * Configura la tabla de sesiones
-     */
-    private void configurarTabla() {
         // Configurar columnas de la tabla
         fechaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTimeStamp().format(dateFormatter)));
         
@@ -149,20 +135,26 @@ public class ResultsController implements Initializable {
         fallosColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getFaults()).asObject());
         
         totalProblemasColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getHits() + cellData.getValue().getFaults()).asObject());
+        
+        // Cargar datos iniciales
+        cargarDatos();
     }
     
+   
     /**
      * Carga los datos del usuario y actualiza la vista
      */
     private void cargarDatos() {
-        if (currentUser == null) {
-            error("Error", "Usuario no encontrado", "No se ha encontrado un usuario válido.");
-            return;
-        }
-        
+                
         try {
+            
+            LocalDate fechaInicio = fechaInicioPicker.getValue();
+            if (fechaInicio == null) {
+                fechaInicio = LocalDate.now().minusDays(30); // Por defecto últimos 30 días
+            }
+            
             // Filtrar sesiones por fecha
-            filtrarSesiones();
+            filtrarSesiones(fechaInicio.atStartOfDay());
             
             // Actualizar estadísticas
             actualizarEstadisticas();
@@ -178,31 +170,18 @@ public class ResultsController implements Initializable {
         }
     }
     
-    /**
-     * Filtra las sesiones según la fecha seleccionada
-     */
-    private void filtrarSesiones() {
-        LocalDate fechaInicio = fechaInicioPicker.getValue();
-        if (fechaInicio == null) {
-            fechaInicio = LocalDate.now().minusDays(30); // Por defecto últimos 30 días
-        }
+    private void filtrarSesiones(LocalDateTime fechaInicio) {
         
-        LocalDateTime fechaInicioDateTime = fechaInicio.atStartOfDay();
+        List<Session> sesiones = currentUser.getSessions();
         
-        // Obtener todas las sesiones del usuario actual
-        List<Session> todasLasSesiones = currentUser.getSessions();
-        
-        // Verificar si hay sesiones
-        if (todasLasSesiones == null || todasLasSesiones.isEmpty()) {
+        if (sesiones == null || sesiones.isEmpty()) {
             sesionesFiltradas = new ArrayList<>();
-            return;
+        } else {
+            for (Session i : sesiones) {
+                if (i.getTimeStamp().isAfter(fechaInicio)){ sesionesFiltradas.add(i); }               
+            }
+            sesionesFiltradas.sort(Comparator.comparing(Session::getTimeStamp)); // ordena las sesiones por fecha :)
         }
-        
-        // Filtrar sesiones por fecha
-        sesionesFiltradas = todasLasSesiones.stream()
-                .filter(session -> session.getTimeStamp().isAfter(fechaInicioDateTime))
-                .sorted(Comparator.comparing(Session::getTimeStamp))
-                .collect(Collectors.toList());
     }
     
     /**
@@ -251,14 +230,14 @@ public class ResultsController implements Initializable {
         if (!sesionesFiltradas.isEmpty()) {
             // Series para aciertos y fallos acumulados
             XYChart.Series<String, Number> aciertosAcumulados = new XYChart.Series<>();
-            aciertosAcumulados.setName("Aciertos acumulados");
+            aciertosAcumulados.setName("Aciertos");
 
             XYChart.Series<String, Number> fallosAcumulados = new XYChart.Series<>();
-            fallosAcumulados.setName("Fallos acumulados");
+            fallosAcumulados.setName("Fallos");
 
             int acumuladoAciertos = 0;
             int acumuladoFallos = 0;
-
+            
             // Rellenar datos
             for (Session sesion : sesionesFiltradas) {
                 String fechaStr = sesion.getTimeStamp().format(dateFormatter);
