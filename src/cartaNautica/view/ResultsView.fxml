@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -17,9 +20,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.NumberAxis?>
-<?import javafx.scene.chart.CategoryAxis?>
 
 <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="600.0" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.ResultsController">
    <children>
@@ -70,8 +70,8 @@
             <!-- Filtro por fecha -->
             <HBox alignment="CENTER" spacing="15.0">
                <children>
-                  <Label text="Ver desde:"/>
-                  <DatePicker fx:id="fechaInicioPicker" promptText="Seleccione fecha inicial"/>
+                  <Label text="Ver desde:" />
+                  <DatePicker fx:id="fechaInicioPicker" promptText="Seleccione fecha inicial" />
                   <Button fx:id="aplicarFiltroButton" mnemonicParsing="false" onAction="#aplicarFiltro" style="-fx-background-color: #0D47A1;" text="Aplicar filtros" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="12.0" />
@@ -161,8 +161,8 @@
                       <columns>
                         <TableColumn fx:id="fechaColumn" prefWidth="120.0" text="Fecha" />
                         <TableColumn fx:id="horaColumn" prefWidth="100.0" text="Hora" />
-                        <TableColumn fx:id="aciertosColumn" prefWidth="100.0" text="Aciertos" />
-                        <TableColumn fx:id="fallosColumn" prefWidth="100.0" text="Fallos" />
+                        <TableColumn fx:id="aciertosColumn" prefWidth="100.0" style="-fx-text-fill: green; -fx-font-weight: bold;" text="Aciertos" />
+                        <TableColumn fx:id="fallosColumn" prefWidth="100.0" style="-fx-text-fill: red; -fx-font-weight: bold;" text="Fallos" />
                         <TableColumn fx:id="totalProblemasColumn" prefWidth="150.0" text="Problemas totales" />
                       </columns>
                       <columnResizePolicy>
@@ -175,7 +175,7 @@
                   <content>
                     <BorderPane>
                       <center>
-                        <LineChart fx:id="acumuladoChart" legendVisible="false" animated="false">
+                        <LineChart fx:id="acumuladoChart" animated="false" legendVisible="false" title="Progreso Acumulado">
                           <xAxis>
                             <CategoryAxis fx:id="fechaEjeX" label="Fecha" side="BOTTOM" />
                           </xAxis>
