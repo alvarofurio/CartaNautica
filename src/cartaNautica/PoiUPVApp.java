@@ -34,6 +34,7 @@ public class PoiUPVApp extends Application {
         Scene scene = new Scene(root);
         miStage.setMinWidth(root.minWidth(-1));
         miStage.setMinHeight(root.minHeight(-1));
+        miStage.setHeight(550);miStage.setWidth(500);
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - Inicio de sesión");
         miStage.show();

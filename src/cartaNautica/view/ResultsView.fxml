@@ -25,7 +25,7 @@
    <children>
       <HBox stylesheets="@../styles/styles.css">
          <children>
-            <HBox prefHeight="15.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" HBox.hgrow="ALWAYS">
+            <HBox prefHeight="15.0" prefWidth="525.0" style="-fx-background-color: #0D47A1;" HBox.hgrow="ALWAYS">
                <children>
                   <Button fx:id="backButton" alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" mnemonicParsing="false" onAction="#goToProblems" prefHeight="2.0" style="-fx-background-color: transparent;" text="Volver" textFill="WHITE">
                      <graphic>

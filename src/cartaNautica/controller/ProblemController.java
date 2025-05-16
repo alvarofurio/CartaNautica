@@ -29,9 +29,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import java.util.Random;
 import model.NavDAOException;
 import model.Navigation;
 import model.Problem;
+
 
 /**
  * FXML Controller class
@@ -57,6 +59,10 @@ public class ProblemController implements Initializable {
     private Menu profileMenu;
     @FXML
     private Button resultsButton;
+    
+    private static Problem problem;
+    private static int aciertos = 0;
+    private static int fallos = 0;
 
     /**
      * Initializes the controller class.
@@ -104,30 +110,7 @@ public class ProblemController implements Initializable {
         // Botón deshabilitado mientras no tengas un problema seleccionado
         solveButton.disableProperty().bind(Bindings.equal(-1,problemsTable.getSelectionModel().selectedIndexProperty()));
     }    
-    
-    private void error(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    @FXML
-    private void editarOn(ActionEvent event) throws IOException {
-        PoiUPVApp.setPrev(true);
-        setScene("../view/EditView.fxml", "Editar perfil");
-    }
-    
-    public void setScene(String ruta, String clave) throws IOException  {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
-        Parent root = loader.load();
-        Scene scene = new Scene(root);
-        Stage miStage = PoiUPVApp.getStage();
-        miStage.setScene(scene);
-        miStage.setTitle("Carta Náutica - "+clave);
-        miStage.show();
-    }
+   
 
     @FXML
     private void cerrarSesiOn(ActionEvent event) throws IOException{
@@ -138,5 +121,52 @@ public class ProblemController implements Initializable {
     @FXML
     private void goToResults(ActionEvent event) throws IOException {
         setScene("../view/ResultsView.fxml", "Resultados");
+    }
+
+    @FXML
+    private void selectProblem(ActionEvent event) throws IOException {
+        problem = problemsTable.getSelectionModel().getSelectedItem();
+        setScene("../view/SolveProblemView.fxml", "Mapa de problemas");
+    }
+    
+    @FXML
+    private void selectRandomProblem(ActionEvent event) throws IOException {
+        int randomIndex = (new Random()).nextInt(misProblems.size());
+        problem =  misProblems.get(randomIndex);
+        setScene("../view/SolveProblemView.fxml", "Mapa de problemas");
+    }
+    
+    public static Problem getProblem(){
+        return problem;
+    }
+    
+    public static void sumarAcierto(){
+        aciertos++;
+    }
+    public static void sumarFallo(){
+        fallos++;
+    }
+    @FXML
+    private void editarOn(ActionEvent event) throws IOException {
+        PoiUPVApp.setPrev(true);
+        setScene("../view/EditView.fxml", "Editar perfil");
+    }
+    
+    private void error(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    public void setScene(String ruta, String clave) throws IOException  {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        Stage miStage = PoiUPVApp.getStage();
+        miStage.setScene(scene);
+        miStage.setTitle("Carta Náutica - "+clave);
+        if (clave.equals("Mapa de problemas")) miStage.setMaximized(true);
+        miStage.show();
     }
 }
