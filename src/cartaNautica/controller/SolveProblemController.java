@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package cartaNautica.controller;
 
 import cartaNautica.PoiUPVApp;
@@ -9,35 +5,35 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import java.util.Collections;
-import java.util.List;
 import model.Answer;
 
 /**
- * FXML Controller class
+ * FXML Controller class para la vista de resolver problemas
  *
  * @author alvar
  */
@@ -68,7 +64,7 @@ public class SolveProblemController implements Initializable {
     @FXML
     private Slider widthSlider;
     @FXML
-    private ScrollPane chartScrollPane;
+    private ScrollPane map_scrollpane;
     @FXML
     private VBox answersContainer;
     @FXML
@@ -94,6 +90,10 @@ public class SolveProblemController implements Initializable {
     @FXML
     private ToggleGroup answersToggleGroup;
     private List<Integer> pos;
+    
+    // Variables para el zoom y la gestión de la carta náutica
+    private Group zoomGroup;
+    private Group contentGroup;
 
     /**
      * Initializes the controller class.
@@ -103,7 +103,6 @@ public class SolveProblemController implements Initializable {
         // Cursor al pasar sobre el backButton
         backButton.setOnMouseEntered(event -> {
             backButton.setStyle("-fx-background-color: #0096C9");
-
         });
         backButton.setOnMouseExited(event -> {
             backButton.setStyle("-fx-background-color: transparent");
@@ -121,9 +120,50 @@ public class SolveProblemController implements Initializable {
         
         // Deshabilitar el botón de resolver si no hay ninguna opción seleccionada
         solveButton.disableProperty().bind(respuestas.selectedToggleProperty().isNull());
+        
+        // Inicializar el control de zoom
+        configurarZoom();
     }    
 
+    private void configurarZoom() {
+        // Inicializar el slider de zoom
+        zoomSlider.setMin(0.5);
+        zoomSlider.setMax(1.5);
+        zoomSlider.setValue(1.0);
+        zoomSlider.valueProperty().addListener((o, oldVal, newVal) -> zoom((Double) newVal));
+        
+        // Configurar la estructura para el zoom
+        contentGroup = new Group();
+        zoomGroup = new Group();
+        contentGroup.getChildren().add(zoomGroup);
+        //zoomGroup.getChildren().add(map_scrollpane.getContent());
+        //map_scrollpane.setContent(contentGroup);
+        
+        // Cargar y configurar la imagen de la carta náutica
+        ImageView chartImageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/carta_nautica.jpg")));
+        zoomGroup.getChildren().add(chartImageView);
+        
+        // Asignar el contenido al ScrollPane
+        map_scrollpane.setContent(contentGroup);
+        
+        // Configuración adicional del ScrollPane
+        map_scrollpane.setPannable(true);
+    }
+    
 
+    private void zoom(double scaleValue) {
+        // Guardar valores de scroll antes del escalado
+        double scrollH = map_scrollpane.getHvalue();
+        double scrollV = map_scrollpane.getVvalue();
+        
+        // Escalar el zoomGroup
+        zoomGroup.setScaleX(scaleValue);
+        zoomGroup.setScaleY(scaleValue);
+        
+        // Restaurar valores de scroll después del escalado
+        map_scrollpane.setHvalue(scrollH);
+        map_scrollpane.setVvalue(scrollV);
+    }
 
     @FXML
     private void goToProblems(ActionEvent event) throws IOException {
@@ -132,10 +172,14 @@ public class SolveProblemController implements Initializable {
 
     @FXML
     private void zoomOut(ActionEvent event) {
+        double sliderVal = zoomSlider.getValue();
+        zoomSlider.setValue(sliderVal - 0.1);
     }
 
     @FXML
     private void zoomIn(ActionEvent event) {
+        double sliderVal = zoomSlider.getValue();
+        zoomSlider.setValue(sliderVal + 0.1);
     }
 
     @FXML
@@ -169,7 +213,6 @@ public class SolveProblemController implements Initializable {
         
         setScene("../view/ProblemView.fxml", "Problemas");
     }
-    
     
     public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));

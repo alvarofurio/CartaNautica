@@ -112,7 +112,7 @@
             <HBox spacing="10" VBox.vgrow="ALWAYS">
                 <!-- Panel principal de la carta (ahora ajustado para dejar más espacio al panel lateral) -->
                 <StackPane maxWidth="Infinity" HBox.hgrow="ALWAYS">
-                    <ScrollPane fx:id="chartScrollPane" pannable="true" prefHeight="500" HBox.hgrow="ALWAYS">
+                    <ScrollPane fx:id="map_scrollpane" pannable="true" prefHeight="500" HBox.hgrow="ALWAYS">
                         <!-- Contenido del ScrollPane será añadido mediante código Java -->
                     </ScrollPane>
                 </StackPane>
