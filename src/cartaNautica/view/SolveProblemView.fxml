@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.ComboBox?>
@@ -20,7 +22,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.SolveProblemController">
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.SolveProblemController">
     <center>
         <VBox spacing="5">
             <!-- Barra de herramientas estilo Word con grupos verticales -->
@@ -37,11 +39,11 @@
                         </fx:define>
                         <ToggleButton fx:id="pointToolButton" text="Punto">
                      <toggleGroup>
-                        <ToggleGroup fx:id="toolToggleGroup" />
+                        <ToggleGroup fx:id="drawToggleGroup" />
                      </toggleGroup></ToggleButton>
-                        <ToggleButton fx:id="lineToolButton" text="Línea" toggleGroup="$toolToggleGroup" />
-                        <ToggleButton fx:id="arcToolButton" text="Arco" toggleGroup="$toolToggleGroup" />
-                        <ToggleButton fx:id="textToolButton" text="Texto" toggleGroup="$toolToggleGroup" />
+                        <ToggleButton fx:id="lineToolButton" text="Línea" toggleGroup="$drawToggleGroup" />
+                        <ToggleButton fx:id="arcToolButton" text="Arco" toggleGroup="$drawToggleGroup" />
+                        <ToggleButton fx:id="textToolButton" text="Texto" toggleGroup="$drawToggleGroup" />
                     </HBox>
                 </VBox>
                 
@@ -56,8 +58,8 @@
                     <HBox alignment="CENTER" spacing="10">
                         <!-- Herramientas de medición -->
                         <HBox alignment="CENTER" spacing="2">
-                            <ToggleButton fx:id="protractorToolButton" text="Transportador" toggleGroup="$toolToggleGroup" />
-                            <ToggleButton fx:id="rulerToolButton" text="Regla" toggleGroup="$toolToggleGroup" />
+                            <ToggleButton fx:id="protractorToolButton" text="Transportador" />
+                            <ToggleButton fx:id="rulerToolButton" text="Regla" />
                         </HBox>
                         
                         <!-- Separador vertical entre herramientas y controles de rotación -->
@@ -66,7 +68,7 @@
                         <!-- Controles de rotación a la derecha con una ligera separación entre botones y ángulo -->
                         <HBox alignment="CENTER" spacing="2">
                             <Label text="Rotar:" />
-                     <Slider fx:id="widthSlider1" prefWidth="100" />
+                     <Slider fx:id="angleSlider" blockIncrement="5.0" max="360.0" prefWidth="100" value="180.0" />
                             
                                      <Label fx:id="rotationAngleLabel" styleClass="angle-label" text="0°" />
                         </HBox>
@@ -82,7 +84,7 @@
                      <Font name="System Bold" size="12.0" />
                   </font></Label>
                     <HBox alignment="CENTER" spacing="2">
-                        <ToggleButton fx:id="eraserToolButton" text="Borrador" toggleGroup="$toolToggleGroup" />
+                        <ToggleButton fx:id="eraserToolButton" text="Borrador" toggleGroup="$drawToggleGroup" />
                         <Button fx:id="clearButton" onAction="#limpiarTodo" text="Limpiar todo" />
                     </HBox>
                 </VBox>
@@ -115,6 +117,8 @@
                     <ScrollPane fx:id="map_scrollpane" pannable="true" prefHeight="500" HBox.hgrow="ALWAYS">
                         <!-- Contenido del ScrollPane será añadido mediante código Java -->
                     </ScrollPane>
+               <Button fx:id="transportador" mnemonicParsing="false" styleClass="transportador" />
+               <Button fx:id="regla" mnemonicParsing="false" styleClass="regla" />
                 </StackPane>
                 
                 <!-- Panel lateral derecho con el problema y respuestas (aún más estrecho) -->
@@ -149,7 +153,13 @@
                         <Button fx:id="solveButton" onAction="#resolver" prefWidth="90" style="-fx-background-color: #1976D2;" styleClass="primary-button" text="Resolver" textFill="WHITE">
                      <font>
                         <Font name="System Bold" size="12.0" />
-                     </font></Button>
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
                     </HBox>
                 </VBox>
                 
@@ -203,4 +213,8 @@
          </children>
       </HBox>
    </top>
+   <stylesheets>
+      <URL value="@../styles/styles.css" />
+      <URL value="@../styles/protractor.css" />
+   </stylesheets>
 </BorderPane>

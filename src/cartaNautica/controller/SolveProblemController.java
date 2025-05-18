@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -72,8 +74,6 @@ public class SolveProblemController implements Initializable {
     @FXML
     private Button solveButton;
     @FXML
-    private Slider widthSlider1;
-    @FXML
     private Label enunciadoLabel;
     @FXML
     private RadioButton respuesta1;
@@ -94,6 +94,14 @@ public class SolveProblemController implements Initializable {
     // Variables para el zoom y la gestión de la carta náutica
     private Group zoomGroup;
     private Group contentGroup;
+    @FXML
+    private ToggleGroup drawToggleGroup;
+    @FXML
+    private Button transportador;
+    @FXML
+    private Button regla;
+    @FXML
+    private Slider angleSlider;
 
     /**
      * Initializes the controller class.
@@ -108,8 +116,6 @@ public class SolveProblemController implements Initializable {
             backButton.setStyle("-fx-background-color: transparent");
         }); 
         
-        System.out.println(ProblemController.getProblem());
-        
         // Enunciado y soluciones
         enunciadoLabel.setText(ProblemController.getProblem().getText());
         pos = new ArrayList<>(Arrays.asList(0, 1, 2, 3)); Collections.shuffle(pos);
@@ -123,6 +129,43 @@ public class SolveProblemController implements Initializable {
         
         // Inicializar el control de zoom
         configurarZoom();
+        
+        // Transportador
+        final double[] offSetX = new double[1];
+        final double[] offSetY = new double[1];
+        
+        transportador.setOnMousePressed( event -> {
+           offSetX[0] = event.getSceneX() - transportador.getTranslateX();
+           
+           offSetY[0] = event.getSceneY() - transportador.getTranslateY();
+        });
+        
+        transportador.setOnMouseDragged( event -> {
+           transportador.setTranslateX(event.getSceneX() - offSetX[0]);
+           
+           transportador.setTranslateY(event.getSceneY() - offSetY[0]);
+        });
+        
+        transportador.visibleProperty().bind(protractorToolButton.selectedProperty());
+        
+        // Regla
+        regla.setOnMousePressed( event -> {
+           offSetX[0] = event.getSceneX() - regla.getTranslateX();
+           
+           offSetY[0] = event.getSceneY() - regla.getTranslateY();
+        });
+        
+        regla.setOnMouseDragged( event -> {
+           regla.setTranslateX(event.getSceneX() - offSetX[0]);
+           
+           regla.setTranslateY(event.getSceneY() - offSetY[0]);
+        });
+        
+        regla.visibleProperty().bind(rulerToolButton.selectedProperty());
+        
+        rotationAngleLabel.textProperty().bind(Bindings.format("%.2f", angleSlider.valueProperty()));
+        
+        regla.rotateProperty().bind(Bindings.add(angleSlider.valueProperty(), -180));
     }    
 
     private void configurarZoom() {
