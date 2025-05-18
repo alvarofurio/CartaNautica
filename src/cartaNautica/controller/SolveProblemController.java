@@ -30,6 +30,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Answer;
@@ -102,6 +103,8 @@ public class SolveProblemController implements Initializable {
     private Button regla;
     @FXML
     private Slider angleSlider;
+    @FXML
+    private Label RotateLabel;
 
     /**
      * Initializes the controller class.
@@ -136,14 +139,16 @@ public class SolveProblemController implements Initializable {
         
         transportador.setOnMousePressed( event -> {
            offSetX[0] = event.getSceneX() - transportador.getTranslateX();
-           
            offSetY[0] = event.getSceneY() - transportador.getTranslateY();
         });
         
-        transportador.setOnMouseDragged( event -> {
-           transportador.setTranslateX(event.getSceneX() - offSetX[0]);
-           
-           transportador.setTranslateY(event.getSceneY() - offSetY[0]);
+        transportador.setOnMouseDragged(event -> {
+            // Acotamos la posición del transportador dentro del mapa -> posFinal = max(posMin, min(pos, posMax))
+            double newX = Math.max(-map_scrollpane.getWidth()/2+transportador.getWidth()/2, Math.min(event.getSceneX() - offSetX[0], map_scrollpane.getWidth()/2-transportador.getWidth()/2));
+            double newY = Math.max(-map_scrollpane.getHeight()/2+transportador.getHeight()/2, Math.min(event.getSceneY() - offSetY[0], map_scrollpane.getHeight()/2-transportador.getHeight()/2));
+
+            transportador.setTranslateX(newX);
+            transportador.setTranslateY(newY);
         });
         
         transportador.visibleProperty().bind(protractorToolButton.selectedProperty());
@@ -151,21 +156,25 @@ public class SolveProblemController implements Initializable {
         // Regla
         regla.setOnMousePressed( event -> {
            offSetX[0] = event.getSceneX() - regla.getTranslateX();
-           
            offSetY[0] = event.getSceneY() - regla.getTranslateY();
         });
         
-        regla.setOnMouseDragged( event -> {
-           regla.setTranslateX(event.getSceneX() - offSetX[0]);
-           
-           regla.setTranslateY(event.getSceneY() - offSetY[0]);
+        regla.setOnMouseDragged(event -> {
+            // Acotamos la posición de la regla dentro del mapa -> posFinal = max(posMin, min(pos, posMax))
+            double alfa = angleSlider.getValue()*Math.PI/180; // Calculamos el ángulo de la regla en radianes
+            double AnchuraReglaFinal = (regla.getWidth())*Math.abs(Math.cos(alfa)); // cos(α) = cos(-α) por lo que no hace falta valor absoluto en α
+            double AlturaReglaFinal = (regla.getWidth())*Math.abs(Math.sin(alfa)) + regla.getHeight(); // sin(α) = -sin(-α) por lo que hace falta valor absoluto en α
+
+            double newX = Math.max(-map_scrollpane.getWidth()/2+AnchuraReglaFinal/2, Math.min(event.getSceneX() - offSetX[0], map_scrollpane.getWidth()/2-AnchuraReglaFinal/2));
+            double newY = Math.max(-map_scrollpane.getHeight()/2+AlturaReglaFinal/2, Math.min(event.getSceneY() - offSetY[0], map_scrollpane.getHeight()/2-AlturaReglaFinal/2));
+
+            regla.setTranslateX(newX);
+            regla.setTranslateY(newY);
         });
-        
         regla.visibleProperty().bind(rulerToolButton.selectedProperty());
-        
         rotationAngleLabel.textProperty().bind(Bindings.format("%.2f", angleSlider.valueProperty()));
-        
-        regla.rotateProperty().bind(Bindings.add(angleSlider.valueProperty(), -180));
+        regla.rotateProperty().bind(Bindings.multiply(angleSlider.valueProperty(),-1));
+        angleSlider.disableProperty().bind(Bindings.not(rulerToolButton.selectedProperty()));
     }    
 
     private void configurarZoom() {
