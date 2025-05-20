@@ -40,10 +40,23 @@
                         <ToggleButton fx:id="pointToolButton" text="Punto">
                      <toggleGroup>
                         <ToggleGroup fx:id="drawToggleGroup" />
-                     </toggleGroup></ToggleButton>
-                        <ToggleButton fx:id="lineToolButton" text="Línea" toggleGroup="$drawToggleGroup" />
-                        <ToggleButton fx:id="arcToolButton" text="Arco" toggleGroup="$drawToggleGroup" />
-                        <ToggleButton fx:id="textToolButton" text="Texto" toggleGroup="$drawToggleGroup" />
+                     </toggleGroup>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ToggleButton>
+                        <ToggleButton fx:id="lineToolButton" text="Línea" toggleGroup="$drawToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ToggleButton>
+                        <ToggleButton fx:id="arcToolButton" text="Arco" toggleGroup="$drawToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ToggleButton>
+                  <ToggleButton fx:id="posToolButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="Pos" toggleGroup="$drawToggleGroup" />
+                        <ToggleButton fx:id="textToolButton" text="Texto" toggleGroup="$drawToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ToggleButton>
                     </HBox>
                 </VBox>
                 
@@ -58,8 +71,14 @@
                     <HBox alignment="CENTER" spacing="10">
                         <!-- Herramientas de medición -->
                         <HBox alignment="CENTER" spacing="2">
-                            <ToggleButton fx:id="protractorToolButton" text="Transportador" />
-                            <ToggleButton fx:id="rulerToolButton" text="Regla" />
+                            <ToggleButton fx:id="protractorToolButton" text="Transportador">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></ToggleButton>
+                            <ToggleButton fx:id="rulerToolButton" text="Regla">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></ToggleButton>
                         </HBox>
                         
                         <!-- Separador vertical entre herramientas y controles de rotación -->
@@ -68,9 +87,12 @@
                         <!-- Controles de rotación a la derecha con una ligera separación entre botones y ángulo -->
                         <HBox alignment="CENTER" spacing="2">
                             <Label fx:id="RotateLabel" text="Rotar:" />
-                     <Slider fx:id="angleSlider" blockIncrement="5.0" max="180.0" min="-180.0" prefWidth="100" />
+                     <Slider fx:id="angleSlider" blockIncrement="5.0" max="180.0" min="-180.0" prefWidth="100">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></Slider>
                             
-                                     <Label fx:id="rotationAngleLabel" styleClass="angle-label" text="0°" />
+                                     <Label fx:id="rotationAngleLabel" prefHeight="17.0" prefWidth="42.0" styleClass="angle-label" text="0" />
                         </HBox>
                     </HBox>
                 </VBox>
@@ -84,28 +106,41 @@
                      <Font name="System Bold" size="12.0" />
                   </font></Label>
                     <HBox alignment="CENTER" spacing="2">
-                        <ToggleButton fx:id="eraserToolButton" text="Borrador" toggleGroup="$drawToggleGroup" />
-                        <Button fx:id="clearButton" onAction="#limpiarTodo" text="Limpiar todo" />
+                        <ToggleButton fx:id="eraserToolButton" text="Borrador" toggleGroup="$drawToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ToggleButton>
+                        <Button fx:id="clearButton" onAction="#limpiarTodo" text="Limpiar todo">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
                     </HBox>
                 </VBox>
                 
-                <Separator orientation="VERTICAL" />
+                <Separator fx:id="separador" orientation="VERTICAL" />
                 
                 <!-- Herramientas de estilo -->
-                <VBox alignment="CENTER" spacing="3" styleClass="tool-group">
-                    <Label styleClass="tool-group-header" text="Estilo">
+                <VBox alignment="CENTER" spacing="3">
+                    <Label fx:id="styleLabel" styleClass="tool-group-header" text="Estilo">
                   <font>
                      <Font name="System Bold" size="12.0" />
                   </font></Label>
                     <HBox alignment="CENTER" spacing="5">
-                        <ColorPicker fx:id="colorPicker" />
-                        <Label text="Ancho:" />
+                        <ColorPicker fx:id="colorPicker">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></ColorPicker>
+                        <Label fx:id="sizeLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="52.0" text="Ancho:" />
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                              <Slider fx:id="widthSlider" prefWidth="100" />
-                        <ComboBox prefWidth="50.0" visible="false" StackPane.alignment="CENTER_LEFT" />
+                              <Slider fx:id="sizeSelector" blockIncrement="0.1" max="10.0" min="2.0" prefWidth="100">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Slider>
+                        <ComboBox fx:id="fontSizeSelector" prefHeight="25.0" prefWidth="60.0" visible="false" StackPane.alignment="CENTER_LEFT" />
                      </children>
                   </StackPane>
+                  <Label fx:id="anchoLabel" prefHeight="17.0" prefWidth="45.0" text="3" />
                     </HBox>
                 </VBox>
             </HBox>
@@ -114,7 +149,7 @@
             <HBox spacing="10" VBox.vgrow="ALWAYS">
                 <!-- Panel principal de la carta (ahora ajustado para dejar más espacio al panel lateral) -->
                 <StackPane maxWidth="Infinity" HBox.hgrow="ALWAYS">
-                    <ScrollPane fx:id="map_scrollpane" pannable="true" prefHeight="500" HBox.hgrow="ALWAYS">
+                    <ScrollPane fx:id="map_scrollpane" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" pannable="true" prefHeight="500" HBox.hgrow="ALWAYS">
                         <!-- Contenido del ScrollPane será añadido mediante código Java -->
                     </ScrollPane>
                <Button fx:id="transportador" mnemonicParsing="false" styleClass="transportador" />
@@ -140,10 +175,22 @@
                         <toggleGroup>
                            <ToggleGroup fx:id="respuestas" />
                         </toggleGroup>
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor>
                      </RadioButton>
-                     <RadioButton fx:id="respuesta2" mnemonicParsing="false" toggleGroup="$respuestas" />
-                     <RadioButton fx:id="respuesta3" mnemonicParsing="false" toggleGroup="$respuestas" />
-                     <RadioButton fx:id="respuesta4" mnemonicParsing="false" toggleGroup="$respuestas" />
+                     <RadioButton fx:id="respuesta2" mnemonicParsing="false" toggleGroup="$respuestas">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></RadioButton>
+                     <RadioButton fx:id="respuesta3" mnemonicParsing="false" toggleGroup="$respuestas">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></RadioButton>
+                     <RadioButton fx:id="respuesta4" mnemonicParsing="false" toggleGroup="$respuestas">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></RadioButton>
                   </children>
                         <!-- Los RadioButtons de respuestas se añadirán dinámicamente en el controlador -->
                     </VBox>
@@ -175,15 +222,24 @@
             <!-- Panel de zoom en la parte inferior -->
             <HBox alignment="CENTER" spacing="10" style="-fx-padding: 5;" styleClass="zoom-box">
                 <Label text="Zoom:" />
-                <Slider fx:id="zoomSlider" max="1.5" min="0.5" prefWidth="200" value="1.0" />
+                <Slider fx:id="zoomSlider" max="1.5" min="0.5" prefWidth="200" value="1.0">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Slider>
                 <Button onAction="#zoomOut" style="-fx-background-color: #0d47a1;" text="-" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
-               </font></Button>
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Button>
                 <Button onAction="#zoomIn" style="-fx-background-color: #1976D2;" text="+" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="12.0" />
-               </font></Button>
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Button>
             </HBox>
             
             <!-- Barra de estado -->
@@ -207,6 +263,9 @@
                            </image>
                         </ImageView>
                      </graphic>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
                   </Button>
                </children></HBox>
             <HBox HBox.hgrow="NEVER" />

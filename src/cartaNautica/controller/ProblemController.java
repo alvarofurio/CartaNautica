@@ -61,8 +61,6 @@ public class ProblemController implements Initializable {
     private Button resultsButton;
     
     private static Problem problem;
-    private static int aciertos = 0;
-    private static int fallos = 0;
 
     /**
      * Initializes the controller class.
@@ -110,11 +108,11 @@ public class ProblemController implements Initializable {
         // Botón deshabilitado mientras no tengas un problema seleccionado
         solveButton.disableProperty().bind(Bindings.equal(-1,problemsTable.getSelectionModel().selectedIndexProperty()));
     }    
-   
+ 
 
     @FXML
     private void cerrarSesiOn(ActionEvent event) throws IOException{
-        PoiUPVApp.setCurrentUser(null);
+        PoiUPVApp.guardarSesion();
         setScene("../view/LoginView.fxml", "Inicio de sesión");
     }
 
@@ -140,12 +138,7 @@ public class ProblemController implements Initializable {
         return problem;
     }
     
-    public static void sumarAcierto(){
-        aciertos++;
-    }
-    public static void sumarFallo(){
-        fallos++;
-    }
+
     @FXML
     private void editarOn(ActionEvent event) throws IOException {
         PoiUPVApp.setPrev(true);

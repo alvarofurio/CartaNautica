@@ -5,12 +5,16 @@
  */
 package cartaNautica;
 
+import java.util.Optional;
 import model.User;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -21,6 +25,9 @@ public class PoiUPVApp extends Application {
     private static User currentUser = null;
     private static Stage miStage;
     private static Boolean prev = true; // True -> Problems / False -> Results (para volver de EditView)
+    
+    private static int aciertos = 0;
+    private static int fallos = 0;
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -38,6 +45,7 @@ public class PoiUPVApp extends Application {
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - Inicio de sesión");
         miStage.show();
+        miStage.setOnCloseRequest(this::cerrarApp);
     }
 
     /**
@@ -58,6 +66,43 @@ public class PoiUPVApp extends Application {
     public static User getCurrentUser() {
         return currentUser;
     }
+    
+    public static int getAciertos(){
+        return aciertos;
+    }
+    public static int getFallos(){
+        return fallos;
+    }
+    public static void sumarAcierto(){
+        aciertos++;
+    }
+    public static void sumarFallo(){
+        fallos++;
+    }
+    
+    public static void guardarSesion(){
+        currentUser.addSession(aciertos,fallos);
+        currentUser = null;
+        aciertos = 0; fallos = 0;
+    }
+    
+    private void cerrarApp(WindowEvent event){
+        if (miStage.getTitle().equals("Carta Náutica - Mapa de problemas")){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cerrar sin guardar");
+            alert.setHeaderText("Pregunta no respondida");
+            alert.setContentText("No has contestado a la pregunta.\n¿Seguro que quieres cerrar la aplicación?");
+            
+            Optional<ButtonType> result = alert.showAndWait();
+            if (!(result.isPresent() && result.get() == ButtonType.OK)){
+                event.consume();
+                return ;
+            }
+        }
+        //guardarSesion();
+        
+    }
+    
     
     public static Boolean getPrev() {return prev;}
     

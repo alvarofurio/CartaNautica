@@ -33,9 +33,11 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -91,6 +93,10 @@ public class ResultsController implements Initializable {
     private List<Session> sesionesFiltradas;
     
     private User currentUser;
+    @FXML
+    private NumberAxis cantidadEjeY;
+    @FXML
+    private CategoryAxis fechaEjeX;
 
     /**
      * Initializes the controller class.
@@ -102,8 +108,19 @@ public class ResultsController implements Initializable {
         
         profileMenu.setText(currentUser.getNickName());
         
-        // Configurar DatePicker con la fecha actual menos 30 días por defecto
+        // Configurar DatePicker
         fechaInicioPicker.setValue(LocalDate.now().minusDays(30));
+        fechaInicioPicker.setDayCellFactory((DatePicker picker) -> {
+            return new DateCell() {
+                @Override
+                public void updateItem(LocalDate date, boolean empty) {
+                    super.updateItem(date, empty);
+                    LocalDate today = LocalDate.now();
+                    setDisable(empty || date.compareTo(today) > 0);
+                }
+            };
+        });
+
         
         // Cursor al pasar sobre el backButton
         backButton.setOnMouseEntered(event -> {
@@ -114,24 +131,36 @@ public class ResultsController implements Initializable {
             backButton.setStyle("-fx-background-color: transparent");
         });
         
+        
         // Cursor al pasar sobre el aplicarFiltroButton
-        aplicarFiltroButton.setOnMouseEntered(event -> {
-            aplicarFiltroButton.setCursor(Cursor.HAND);
-        });
-        aplicarFiltroButton.setOnMouseExited(event -> {
-            aplicarFiltroButton.setCursor(Cursor.DEFAULT);
-        });
+        aplicarFiltroButton.setOnMouseEntered(event -> {aplicarFiltroButton.setCursor(Cursor.HAND);});
+        aplicarFiltroButton.setOnMouseExited(event -> {aplicarFiltroButton.setCursor(Cursor.DEFAULT);});
         
-        // Configurar columnas de la tabla
-        fechaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTimeStamp().format(dateFormatter)));
-        
-        horaColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getTimeStamp().format(timeFormatter)));
+        fechaColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) return new SimpleStringProperty("Actual");
+            else return new SimpleStringProperty(cellData.getValue().getTimeStamp().format(dateFormatter));
+        });
 
-        aciertosColumn.setCellValueFactory(cellData-> new SimpleIntegerProperty(cellData.getValue().getHits()).asObject());
+        horaColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) return new SimpleStringProperty("Actual");
+            else return new SimpleStringProperty(cellData.getValue().getTimeStamp().format(timeFormatter));
+        });
         
-        fallosColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getFaults()).asObject());
+        aciertosColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) return new SimpleIntegerProperty(PoiUPVApp.getAciertos()).asObject();
+            else return new SimpleIntegerProperty(cellData.getValue().getHits()).asObject();
+            
+        });
         
-        totalProblemasColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getHits() + cellData.getValue().getFaults()).asObject());
+        fallosColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) return new SimpleIntegerProperty(PoiUPVApp.getFallos()).asObject();
+            else return new SimpleIntegerProperty(cellData.getValue().getFaults()).asObject();
+        });
+        
+        totalProblemasColumn.setCellValueFactory(cellData -> {
+            if (cellData.getValue() == null) return new SimpleIntegerProperty(PoiUPVApp.getAciertos() + PoiUPVApp.getFallos()).asObject();
+            else return new SimpleIntegerProperty(cellData.getValue().getHits() + cellData.getValue().getFaults()).asObject();
+        });
         
         // Cargar datos iniciales
         cargarDatos();
@@ -154,30 +183,30 @@ public class ResultsController implements Initializable {
             actualizarEstadisticas();
             
             // Actualizar tabla
+            sesionesTable.getItems().clear();
             ObservableList<Session> sesionesObservable = FXCollections.observableList(sesionesFiltradas);
             sesionesTable.setItems(sesionesObservable);
+
             
             // Actualizar gráfica
             actualizarGrafica();
+
         } catch (Exception e) {
             error("Error", "Error al cargar datos", "Se produjo un error al cargar los datos: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     
     private void filtrarSesiones(LocalDateTime fechaInicio) {
         
         List<Session> sesiones = currentUser.getSessions();
-        
-        if (sesiones == null || sesiones.isEmpty()) {
-            sesionesFiltradas = new ArrayList<>();
-        } else {
-            sesionesFiltradas = new ArrayList<>();
+        sesionesFiltradas = new ArrayList<>();
+        if (sesiones != null && !sesiones.isEmpty()) {
             for (Session i : sesiones) {
                 if (i.getTimeStamp().isAfter(fechaInicio)){ sesionesFiltradas.add(i); }               
             }
             sesionesFiltradas.sort(Comparator.comparing(Session::getTimeStamp)); // ordena las sesiones por fecha :)
         }
+        sesionesFiltradas.add(null);
     }
     
     private void actualizarEstadisticas() {
@@ -187,9 +216,12 @@ public class ResultsController implements Initializable {
         int numSesiones = sesionesFiltradas.size();
         
         for (Session i : sesionesFiltradas) {
+            if (i == null) continue;
             aciertos += i.getHits();
             fallos += i.getFaults();
         }
+        aciertos += PoiUPVApp.getAciertos();
+        fallos += PoiUPVApp.getFallos();
         
         totalAciertosLabel.setText(String.valueOf(aciertos));
         totalFallosLabel.setText(String.valueOf(fallos));
@@ -207,7 +239,7 @@ public class ResultsController implements Initializable {
         
         acumuladoChart.getData().clear();
         
-        if (!sesionesFiltradas.isEmpty()) {
+        if(!sesionesFiltradas.isEmpty())  {
             // Series para aciertos y fallos acumulados
             Series<String, Number> fechaAciertos = new Series<>();
             fechaAciertos.setName("Aciertos");
@@ -218,26 +250,31 @@ public class ResultsController implements Initializable {
             int aciertos = 0;
             int fallos = 0;
             
-            String lastDate = sesionesFiltradas.getFirst().getTimeStamp().format(dateFormatter);
-            for (Session sesion : sesionesFiltradas) {
-                
-                String fecha = sesion.getTimeStamp().format(dateFormatter);
-                
-                if (!fecha.equals(lastDate)) {
-                    
-                    fechaAciertos.getData().add(new Data<>(lastDate, aciertos));
-                    fechaFallos.getData().add(new Data<>(lastDate, fallos));
-                    
-                    lastDate = fecha;
-                }
-                    
-                aciertos += sesion.getHits();
-                fallos += sesion.getFaults();
-            }
-            fechaAciertos.getData().add(new Data<>(lastDate, aciertos));
-            fechaFallos.getData().add(new Data<>(lastDate, fallos));
+            
+            if (sesionesFiltradas.getFirst() != null){
+                String lastDate = sesionesFiltradas.getFirst().getTimeStamp().format(dateFormatter);
+                for (Session sesion : sesionesFiltradas) {
+                    if (sesion == null) continue;
+                    String fecha = sesion.getTimeStamp().format(dateFormatter);
+                    if (!fecha.equals(lastDate)) {
+                        fechaAciertos.getData().add(new Data<>(lastDate, aciertos));
+                        fechaFallos.getData().add(new Data<>(lastDate, fallos));
 
+                        lastDate = fecha;
+                    }
+                    aciertos += sesion.getHits();
+                    fallos += sesion.getFaults();
+                }
+                fechaAciertos.getData().add(new Data<>(lastDate, aciertos));
+                fechaFallos.getData().add(new Data<>(lastDate, fallos));
+            }
+            // Sesión Actual
+            aciertos += PoiUPVApp.getAciertos();
+            fallos += PoiUPVApp.getFallos();
+            fechaAciertos.getData().add(new Data<>("Sesión Actual", aciertos));
+            fechaFallos.getData().add(new Data<>("Sesión Actual", fallos));
             acumuladoChart.getData().addAll(fechaAciertos, fechaFallos);
+            
             
             // Estilo Aciertos
             Series<String, Number> series = acumuladoChart.getData().get(0);
@@ -277,7 +314,7 @@ public class ResultsController implements Initializable {
 
     @FXML
     private void cerrarSesiOn(ActionEvent event) throws IOException{
-        PoiUPVApp.setCurrentUser(null);
+        PoiUPVApp.guardarSesion();
         setScene("../view/LoginView.fxml", "Inicio de sesión");
     }
     
