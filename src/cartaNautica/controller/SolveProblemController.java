@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -45,6 +46,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
@@ -139,6 +142,9 @@ public class SolveProblemController implements Initializable {
     
     private Circle punto;
     private Line linea;
+    private Arc arco;
+    private Line lineaHor;
+    private Line lineaVer;
 
     /**
      * Initializes the controller class.
@@ -232,6 +238,9 @@ public class SolveProblemController implements Initializable {
         contentGroup.getChildren().add(zoomGroup);
         //zoomGroup.getChildren().add(map_scrollpane.getContent());
         //map_scrollpane.setContent(contentGroup);
+        contentGroup.setOnMousePressed(this::onMousePressed);
+        contentGroup.setOnMouseDragged(this::onMouseDragged);
+        contentGroup.setOnMouseReleased(this::onMouseReleased);
         
         // Cargar y configurar la imagen de la carta náutica
         ImageView chartImageView = new ImageView(new Image(getClass().getResourceAsStream("/resources/carta_nautica.jpg")));
@@ -362,25 +371,85 @@ public class SolveProblemController implements Initializable {
             linea = new Line(pointInZoomGroup.getX(), pointInZoomGroup.getY(), pointInZoomGroup.getX(), pointInZoomGroup.getY());
             linea.setStroke(colorPicker.getValue());
             linea.setStrokeWidth(sizeSelector.getValue());
+            linea.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
             zoomGroup.getChildren().add(linea);
             
             configurarEventosEliminacion(linea);
+        } if (arcToolButton.isSelected()){
+            arco = new Arc();
+            arco.setStartAngle(0); arco.setLength(180); 
+            arco.setRadiusX(1); arco.setRadiusY(1);
+            
+            arco.setType(ArcType.OPEN);
+            arco.setFill(Color.TRANSPARENT);
+            arco.setStroke(colorPicker.getValue());
+            arco.setStrokeWidth(sizeSelector.getValue());
+            arco.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
+
+            arco.setCenterX(pointInZoomGroup.getX());
+            arco.setCenterY(pointInZoomGroup.getY());
+            
+            zoomGroup.getChildren().add(arco);
+
+            configurarEventosEliminacion(arco);
+        } else if (posToolButton.isSelected()) {
+            Bounds bounds = zoomGroup.getChildren().get(0).getBoundsInParent();
+            
+            lineaHor = new Line(0, pointInZoomGroup.getY(), bounds.getWidth(), pointInZoomGroup.getY());
+            lineaHor.setStroke(colorPicker.getValue());
+            lineaHor.setStrokeWidth(sizeSelector.getValue());
+
+            lineaVer = new Line(pointInZoomGroup.getX(), 0, pointInZoomGroup.getX(), bounds.getHeight());
+            lineaVer.setStroke(colorPicker.getValue());
+            lineaVer.setStrokeWidth(sizeSelector.getValue());
+            
+            zoomGroup.getChildren().add(lineaHor);
+            zoomGroup.getChildren().add(lineaVer);
+
+            configurarEventosEliminacion(lineaHor);
+            configurarEventosEliminacion(lineaVer);
         }
+        
     }
     
     @FXML
     private void onMouseDragged(MouseEvent event) {
-        System.out.println("sdg");
         Point2D pointInZoomGroup = zoomGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
+        Bounds bounds = zoomGroup.getChildren().get(0).getBoundsInParent();
         if(lineToolButton.isSelected()){
-            linea.setEndX(pointInZoomGroup.getX());
-            linea.setEndY(pointInZoomGroup.getY());
+            Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
+            Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
+            
+            linea.setEndX(X);
+            linea.setEndY(Y);
+            event.consume();
+            
+        } else if(arcToolButton.isSelected()){
+            Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
+            Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
+            
+            double radio = Math.sqrt(Math.pow(X-arco.getCenterX(), 2)+ Math.pow(Y-arco.getCenterY(), 2));
+            arco.setRadiusX(radio); arco.setRadiusY(radio);
+            double dx = X - arco.getCenterX();
+            double dy = Y - arco.getCenterY();
+            double angle = Math.toDegrees(Math.atan2(-dy, dx))-90;
+            while (angle < 0) angle += 360;
+            angle %= 360;
+            arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
             event.consume();
         }
     }
     
     @FXML
     private void onMouseReleased(MouseEvent event) {
+        if(lineToolButton.isSelected()){
+            linea.getStrokeDashArray().clear(); 
+            event.consume();
+        } else if(arcToolButton.isSelected()){
+            arco.getStrokeDashArray().clear(); 
+            event.consume();
+        }
+        
     }
 
 
