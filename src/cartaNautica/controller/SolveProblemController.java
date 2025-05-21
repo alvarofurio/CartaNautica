@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
@@ -27,6 +28,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -36,6 +38,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -50,6 +53,7 @@ import javafx.scene.shape.Arc;
 import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Answer;
 
@@ -375,7 +379,7 @@ public class SolveProblemController implements Initializable {
             zoomGroup.getChildren().add(linea);
             
             configurarEventosEliminacion(linea);
-        } if (arcToolButton.isSelected()){
+        } else if (arcToolButton.isSelected()){
             arco = new Arc();
             arco.setStartAngle(0); arco.setLength(180); 
             arco.setRadiusX(1); arco.setRadiusY(1);
@@ -408,6 +412,29 @@ public class SolveProblemController implements Initializable {
 
             configurarEventosEliminacion(lineaHor);
             configurarEventosEliminacion(lineaVer);
+        } else if (textToolButton.isSelected()) {
+            TextField texto = new TextField();
+            zoomGroup.getChildren().add(texto);
+            String color = Integer.toHexString(colorPicker.getValue().hashCode()).substring(0,6);
+            int fontSize = fontSizeSelector.getValue();
+            texto.setStyle("-fx-border-color: black; -fx-text-fill: #"+color+"; -fx-font-size: "+fontSize);
+            texto.setLayoutX(pointInZoomGroup.getX());
+            texto.setLayoutY(pointInZoomGroup.getY());
+            texto.requestFocus();
+            
+            texto.setOnKeyPressed(e -> {
+                if (e.getCode()==KeyCode.ENTER) texto.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #"+color+"; -fx-font-size: "+fontSize);
+                e.consume();
+               /*Text textoT = new Text(texto.getText());
+               textoT.setX(texto.getLayoutX());
+               textoT.setY(texto.getLayoutY()+texto.getHeight()/2);
+               textoT.setStyle("-fx-font-family: Gafata; -fx-font-size: "+fontSizeSelector.getValue());
+               textoT.setFill(colorPicker.getValue());
+               zoomGroup.getChildren().remove(texto);
+               zoomGroup.getChildren().add(textoT);
+               e.consume();*/
+            });
+            
         }
         
     }
@@ -416,7 +443,10 @@ public class SolveProblemController implements Initializable {
     private void onMouseDragged(MouseEvent event) {
         Point2D pointInZoomGroup = zoomGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
         Bounds bounds = zoomGroup.getChildren().get(0).getBoundsInParent();
-        if(lineToolButton.isSelected()){
+        if (pointToolButton.isSelected()) {
+            map_scrollpane.setCursor(Cursor.CROSSHAIR);
+            event.consume();
+        } else if(lineToolButton.isSelected()){
             Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
             Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
             
@@ -455,6 +485,16 @@ public class SolveProblemController implements Initializable {
 
     @FXML
     private void limpiarTodo(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Limpiar carta");
+        alert.setHeaderText("¿Está seguro de que desea limpiar la carta?");
+        alert.setContentText("Esta acción eliminará todos los elementos dibujados y no se puede deshacer.");
+            
+        Optional<ButtonType> result = alert.showAndWait();
+        if ((result.isPresent() && result.get() == ButtonType.OK)){
+            System.out.println(zoomGroup.getChildren().size());
+            for (int i = 1; i<zoomGroup.getChildren().size(); i++) System.out.println(zoomGroup.getChildren().get(i));
+        } //zoomGroup.getChildren().remove(zoomGroup.getChildren().get(i))
     }
     
     private void configurarEventosEliminacion(Node node) {
