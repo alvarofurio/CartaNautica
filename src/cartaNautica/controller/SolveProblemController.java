@@ -20,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
@@ -370,7 +371,7 @@ public class SolveProblemController implements Initializable {
             punto.setCenterY(pointInZoomGroup.getY());
             
             configurarEventosEliminacion(punto);
-            
+            event.consume();
         } else if(lineToolButton.isSelected()){
             linea = new Line(pointInZoomGroup.getX(), pointInZoomGroup.getY(), pointInZoomGroup.getX(), pointInZoomGroup.getY());
             linea.setStroke(colorPicker.getValue());
@@ -379,6 +380,7 @@ public class SolveProblemController implements Initializable {
             zoomGroup.getChildren().add(linea);
             
             configurarEventosEliminacion(linea);
+            event.consume();
         } else if (arcToolButton.isSelected()){
             arco = new Arc();
             arco.setStartAngle(0); arco.setLength(180); 
@@ -396,6 +398,7 @@ public class SolveProblemController implements Initializable {
             zoomGroup.getChildren().add(arco);
 
             configurarEventosEliminacion(arco);
+            event.consume();
         } else if (posToolButton.isSelected()) {
             Bounds bounds = zoomGroup.getChildren().get(0).getBoundsInParent();
             
@@ -412,29 +415,38 @@ public class SolveProblemController implements Initializable {
 
             configurarEventosEliminacion(lineaHor);
             configurarEventosEliminacion(lineaVer);
+            event.consume();
         } else if (textToolButton.isSelected()) {
             TextField texto = new TextField();
             zoomGroup.getChildren().add(texto);
             String color = Integer.toHexString(colorPicker.getValue().hashCode()).substring(0,6);
             int fontSize = fontSizeSelector.getValue();
-            texto.setStyle("-fx-border-color: black; -fx-text-fill: #"+color+"; -fx-font-size: "+fontSize);
+            texto.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: #"+color+"; -fx-font-size: "+fontSize);
             texto.setLayoutX(pointInZoomGroup.getX());
             texto.setLayoutY(pointInZoomGroup.getY());
             texto.requestFocus();
-            
-            texto.setOnKeyPressed(e -> {
-                if (e.getCode()==KeyCode.ENTER) texto.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #"+color+"; -fx-font-size: "+fontSize);
-                e.consume();
-               /*Text textoT = new Text(texto.getText());
-               textoT.setX(texto.getLayoutX());
-               textoT.setY(texto.getLayoutY()+texto.getHeight()/2);
-               textoT.setStyle("-fx-font-family: Gafata; -fx-font-size: "+fontSizeSelector.getValue());
-               textoT.setFill(colorPicker.getValue());
-               zoomGroup.getChildren().remove(texto);
-               zoomGroup.getChildren().add(textoT);
-               e.consume();*/
+            texto.setAlignment(Pos.CENTER);
+
+            texto.textProperty().addListener((observable, oldValue, newValue) -> {
+                // Calcular un ancho mínimo razonable
+                double minWidth = 100;
+                // Estimar ancho según caracteres (ajusta el multiplicador según la fuente)
+                double estimatedWidth = Math.max(minWidth, newValue.length() * (fontSize * 0.5) + 20);
+                texto.setPrefWidth(estimatedWidth);
             });
             
+            texto.focusedProperty().addListener((obsV, oldV, newV)-> {
+                if (newV) texto.setStyle(texto.getStyle()+"; -fx-background-color: transparent; -fx-border-color: black");
+                else {
+                    texto.setStyle(texto.getStyle()+"; -fx-background-color: transparent; -fx-border-color: transparent");
+                    if (texto.getText().equals("")) zoomGroup.getChildren().remove(texto);
+                }
+            });
+            
+            texto.setOnAction(e -> {
+               texto.getScene().getRoot().requestFocus();
+            });
+            event.consume();
         }
         
     }
@@ -453,9 +465,8 @@ public class SolveProblemController implements Initializable {
             linea.setEndX(X);
             linea.setEndY(Y);
             event.consume();
-            
         } else if(arcToolButton.isSelected()){
-            Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
+            /*Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
             Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
             
             double radio = Math.sqrt(Math.pow(X-arco.getCenterX(), 2)+ Math.pow(Y-arco.getCenterY(), 2));
@@ -463,6 +474,40 @@ public class SolveProblemController implements Initializable {
             double dx = X - arco.getCenterX();
             double dy = Y - arco.getCenterY();
             double angle = Math.toDegrees(Math.atan2(-dy, dx))-90;
+            while (angle < 0) angle += 360;
+            angle %= 360;
+            arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
+            event.consume();*/
+            
+            Double w = bounds.getWidth();
+            Double h = bounds.getHeight();
+            Double xr = Math.max(0, Math.min(pointInZoomGroup.getX(), w));
+            Double yr = Math.max(0, Math.min(pointInZoomGroup.getY(), h));
+            Double xc = arco.getCenterX();
+            Double yc = arco.getCenterY();
+ 
+            Double alpha = Math.atan2(yr - yc, xr - xc);
+ 
+            Double cosmaxx = Math.abs( (Double) Math.cos(Math.PI/2 -  alpha) );
+            Double cosminx = cosmaxx;
+ 
+            if (alpha - Math.PI/2 <= 0 && alpha + Math.PI/2 >= 0) {cosmaxx = 1.0;}
+            if (alpha - Math.PI/2 <= Math.PI && alpha + Math.PI/2 >= Math.PI) {cosminx = 1.0;}
+            Double sinmaxy = Math.abs( (Double) Math.sin(Math.PI/2 -  alpha) );
+            Double sinminy = cosmaxx;
+ 
+            if (alpha - Math.PI/2 <= Math.PI/2 && alpha + Math.PI/2 >= Math.PI/2) {sinmaxy = 1.0;}
+            if (alpha - Math.PI/2 <= - Math.PI/2 && alpha + Math.PI/2 >= - Math.PI/2) {sinminy = 1.0;}
+            Double r = Math.sqrt(Math.pow(xr - xc, 2) + Math.pow(yr - yc, 2));
+ 
+            double maxR = Math.min(
+                r ,
+                Math.min( Math.min((w-xc)/cosmaxx, xc/cosminx), Math.min((h-yc)/sinmaxy, yc/sinminy))
+            );
+ 
+            arco.setRadiusX(maxR); arco.setRadiusY(maxR);
+ 
+            double angle = Math.toDegrees(Math.atan2(-(yr-yc), (xr-xc)))-90;
             while (angle < 0) angle += 360;
             angle %= 360;
             arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
@@ -474,12 +519,10 @@ public class SolveProblemController implements Initializable {
     private void onMouseReleased(MouseEvent event) {
         if(lineToolButton.isSelected()){
             linea.getStrokeDashArray().clear(); 
-            event.consume();
         } else if(arcToolButton.isSelected()){
             arco.getStrokeDashArray().clear(); 
-            event.consume();
         }
-        
+        event.consume();
     }
 
 
@@ -493,8 +536,10 @@ public class SolveProblemController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if ((result.isPresent() && result.get() == ButtonType.OK)){
             System.out.println(zoomGroup.getChildren().size());
-            for (int i = 1; i<zoomGroup.getChildren().size(); i++) System.out.println(zoomGroup.getChildren().get(i));
-        } //zoomGroup.getChildren().remove(zoomGroup.getChildren().get(i))
+            int size = zoomGroup.getChildren().size();
+            for (int i = 1; i<size; i++) zoomGroup.getChildren().remove(1);
+            System.out.println(zoomGroup.getChildren());
+        }
     }
     
     private void configurarEventosEliminacion(Node node) {
