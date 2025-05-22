@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -34,6 +35,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollPane;
@@ -150,6 +152,10 @@ public class SolveProblemController implements Initializable {
     private Arc arco;
     private Line lineaHor;
     private Line lineaVer;
+    
+    
+    private HashMap<TextField, String> textoAColor = new HashMap<>();
+    private HashMap<TextField, Integer> textoATamano = new HashMap<>();
 
     /**
      * Initializes the controller class.
@@ -197,7 +203,7 @@ public class SolveProblemController implements Initializable {
             else sizeLabel.setText("Grosor: ");
         });
         tamanosFuente = fontSizeSelector.getItems();
-        tamanosFuente.addAll(6,7,8,9,10,12,14,16,18,20,24,28,32,36);
+        tamanosFuente.addAll(6,7,8,9,10,12,14,16,18,20,24,28,32,36,48,72);
         anchoLabel.textProperty().bind(Bindings.format("%.1f px", sizeSelector.valueProperty()));
         
         
@@ -223,7 +229,9 @@ public class SolveProblemController implements Initializable {
             if (textToolButton.isSelected()) map_scrollpane.setCursor(Cursor.TEXT); 
             else map_scrollpane.setCursor(Cursor.MOVE);
         });
-        eraserCursor = new ImageCursor(new Image(getClass().getResourceAsStream("/resources/cursorGoma.png")), 50, 200);
+        
+        eraserCursor = new ImageCursor(new Image(getClass().getResourceAsStream("/resources/iconoGoma2.png")), 50, 400);
+        
         eraserToolButton.setOnAction(e -> {
             if (eraserToolButton.isSelected()) map_scrollpane.setCursor(eraserCursor); 
             else map_scrollpane.setCursor(Cursor.MOVE);
@@ -328,7 +336,6 @@ public class SolveProblemController implements Initializable {
                 }
         });
         regla.visibleProperty().bind(rulerToolButton.selectedProperty());
-        rotationAngleLabel.textProperty().bind(Bindings.format("%.1f", angleSlider.valueProperty()));
         regla.rotateProperty().bind(Bindings.multiply(angleSlider.valueProperty(),-1));
         // Desactivar las opciones de rotación si al regla no está seleccioanda
         angleSlider.disableProperty().bind(Bindings.not(rulerToolButton.selectedProperty()));
@@ -370,7 +377,7 @@ public class SolveProblemController implements Initializable {
             punto.setCenterX(pointInZoomGroup.getX());
             punto.setCenterY(pointInZoomGroup.getY());
             
-            configurarEventosEliminacion(punto);
+            configurarMenuContextual(punto);
             event.consume();
         } else if(lineToolButton.isSelected()){
             linea = new Line(pointInZoomGroup.getX(), pointInZoomGroup.getY(), pointInZoomGroup.getX(), pointInZoomGroup.getY());
@@ -379,7 +386,7 @@ public class SolveProblemController implements Initializable {
             linea.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
             zoomGroup.getChildren().add(linea);
             
-            configurarEventosEliminacion(linea);
+            configurarMenuContextual(linea);
             event.consume();
         } else if (arcToolButton.isSelected()){
             arco = new Arc();
@@ -397,7 +404,7 @@ public class SolveProblemController implements Initializable {
             
             zoomGroup.getChildren().add(arco);
 
-            configurarEventosEliminacion(arco);
+            configurarMenuContextual(arco);
             event.consume();
         } else if (posToolButton.isSelected()) {
             Bounds bounds = zoomGroup.getChildren().get(0).getBoundsInParent();
@@ -405,51 +412,48 @@ public class SolveProblemController implements Initializable {
             lineaHor = new Line(0, pointInZoomGroup.getY(), bounds.getWidth(), pointInZoomGroup.getY());
             lineaHor.setStroke(colorPicker.getValue());
             lineaHor.setStrokeWidth(sizeSelector.getValue());
-            //lineaHor.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
+            lineaHor.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
 
             lineaVer = new Line(pointInZoomGroup.getX(), 0, pointInZoomGroup.getX(), bounds.getHeight());
             lineaVer.setStroke(colorPicker.getValue());
             lineaVer.setStrokeWidth(sizeSelector.getValue());
-            //lineaVer.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
+            lineaVer.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
             
             zoomGroup.getChildren().add(lineaHor);
             zoomGroup.getChildren().add(lineaVer);
 
-            configurarEventosEliminacion(lineaHor);
-            configurarEventosEliminacion(lineaVer);
+            configurarMenuContextual(lineaHor);
+            configurarMenuContextual(lineaVer);
             event.consume();
         } else if (textToolButton.isSelected()) {
             TextField texto = new TextField();
             zoomGroup.getChildren().add(texto);
-            String color = Integer.toHexString(colorPicker.getValue().hashCode()).substring(0,6);
-            int fontSize = fontSizeSelector.getValue();
-            texto.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: #"+color+"; -fx-font-size: "+fontSize);
-            texto.setLayoutX(pointInZoomGroup.getX());
-            texto.setLayoutY(pointInZoomGroup.getY());
+            textoAColor.put(texto, colorPicker.getValue().toString().substring(2,8));
+            textoATamano.put(texto, fontSizeSelector.getValue());
+            texto.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: #"+textoAColor.get(texto)+"; -fx-font-size: "+textoATamano.get(texto));
+            double initialWidth = Math.max(150, textoATamano.get(texto) * 9);
+            texto.setPrefWidth(initialWidth);
+            texto.setLayoutX(pointInZoomGroup.getX() - initialWidth/2);
+            texto.setLayoutY(pointInZoomGroup.getY()- textoATamano.get(texto));
             texto.requestFocus();
             texto.setAlignment(Pos.CENTER);
-
-            double initialWidth = Math.max(150, fontSize * 9);
-            texto.setPrefWidth(initialWidth);
-
-            // Crear binding simple sin interferir con el cursor
+            
             texto.textProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal == null || newVal.isEmpty()) {
-                    texto.setPrefWidth(initialWidth);
+                    texto.setPrefWidth(Math.max(150, textoATamano.get(texto) * 9));
                 } else {
-                    // Cálculo simple: caracteres * factor basado en tamaño de fuente + padding
-                    double charWidth = fontSize * 0.5; // Aproximación conservadora
+                    double charWidth = textoATamano.get(texto) * 0.5; // Aproximación conservadora
                     double calculatedWidth = newVal.length() * charWidth + 30; // 40px de padding
-                    double finalWidth = Math.max(initialWidth, calculatedWidth);
+                    double finalWidth = Math.max(Math.max(150, textoATamano.get(texto) * 9), calculatedWidth);
 
                     texto.setPrefWidth(finalWidth);
                 }
             });
 
             texto.focusedProperty().addListener((obsV, oldV, newV)-> {
-                if (newV) texto.setStyle(texto.getStyle()+"; -fx-background-color: transparent; -fx-border-color: black");
+                if (newV && !eraserToolButton.isSelected()) texto.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: #"+textoAColor.get(texto)+"; -fx-font-size: "+textoATamano.get(texto));
                 else {
-                    texto.setStyle(texto.getStyle()+"; -fx-background-color: transparent; -fx-border-color: transparent");
+                    texto.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #"+textoAColor.get(texto)+"; -fx-font-size: "+textoATamano.get(texto));
                     if (texto.getText().equals("")) zoomGroup.getChildren().remove(texto);
                 }
             });
@@ -457,6 +461,14 @@ public class SolveProblemController implements Initializable {
             texto.setOnAction(e -> {
                texto.getScene().getRoot().requestFocus();
             });
+            
+            texto.setOnMouseEntered(e -> {
+                if (eraserToolButton.isSelected()){ texto.setCursor(eraserCursor); texto.setEditable(false);}
+                else {texto.setCursor(Cursor.TEXT); texto.setEditable(true);}
+                e.consume();
+            });
+            
+            configurarMenuContextual(texto);
             event.consume();
         }
         
@@ -477,19 +489,7 @@ public class SolveProblemController implements Initializable {
             linea.setEndY(Y);
             event.consume();
         } else if(arcToolButton.isSelected()){
-            /*Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
-            Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
-            
-            double radio = Math.sqrt(Math.pow(X-arco.getCenterX(), 2)+ Math.pow(Y-arco.getCenterY(), 2));
-            arco.setRadiusX(radio); arco.setRadiusY(radio);
-            double dx = X - arco.getCenterX();
-            double dy = Y - arco.getCenterY();
-            double angle = Math.toDegrees(Math.atan2(-dy, dx))-90;
-            while (angle < 0) angle += 360;
-            angle %= 360;
-            arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
-            event.consume();*/
-            
+            // Cálculos trigonométrios de ajuste del arco dentro de la carta naútica
             Double w = bounds.getWidth();
             Double h = bounds.getHeight();
             Double xr = Math.max(0, Math.min(pointInZoomGroup.getX(), w));
@@ -523,6 +523,9 @@ public class SolveProblemController implements Initializable {
             angle %= 360;
             arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
             event.consume();
+        } else if (posToolButton.isSelected()) {
+            map_scrollpane.setCursor(Cursor.CROSSHAIR);
+            event.consume();
         }
     }
     
@@ -542,7 +545,7 @@ public class SolveProblemController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Limpiar carta");
         alert.setHeaderText("¿Está seguro de que desea limpiar la carta?");
-        alert.setContentText("Esta acción eliminará todos los elementos dibujados y no se puede deshacer.");
+        alert.setContentText("Esta acción eliminará todos los elementos dibujados\n y no se puede deshacer.");
             
         Optional<ButtonType> result = alert.showAndWait();
         if ((result.isPresent() && result.get() == ButtonType.OK)){
@@ -554,16 +557,86 @@ public class SolveProblemController implements Initializable {
         
     }
     
-    private void configurarEventosEliminacion(Node node) {
-        // Menú contextual (clic derecho)
+    private void configurarMenuContextual(Node node) {
         node.setOnContextMenuRequested(e -> {
             ContextMenu menuContext = new ContextMenu();
-            MenuItem borrarItem = new MenuItem("Eliminar");
-            menuContext.getItems().add(borrarItem);
+            menuContext.setStyle("-fx-font-size: 12;");
+            // Sección de Color
+            Menu cambiarColorItem = new Menu("Color");
+            MenuItem colorItem = new MenuItem();       
+            ColorPicker MenuColorPicker = new ColorPicker();
+            Color currentColor = null;
+            if (node instanceof Circle circle) currentColor = (Color) circle.getFill();
+            else if (node instanceof Line line) currentColor = (Color) line.getStroke();
+            else if (node instanceof Arc arc) currentColor = (Color) arc.getStroke();
+            else if (node instanceof TextField textField) currentColor = Color.valueOf(textoAColor.get(textField));
+            MenuColorPicker.setValue(currentColor);
+            
+            colorItem.setGraphic(MenuColorPicker);
+            cambiarColorItem.getItems().add(colorItem);
+            menuContext.getItems().add(cambiarColorItem);
+            MenuColorPicker.valueProperty().addListener((obsV, oldV, newV) -> {
+                if (node instanceof Circle circle) circle.setFill(newV);
+                else if (node instanceof Line line) line.setStroke(newV);
+                else if (node instanceof Arc arc) arc.setStroke(newV);
+                else if (node instanceof TextField textField){
+                    textoAColor.put(textField, newV.toString().substring(2,8));
+                    textField.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: #"+textoAColor.get(textField)+"; -fx-font-size: "+textoATamano.get(textField));
+                }
+            });
+            
+            // Sección de Tamaño
+            if (node instanceof TextField textField){
+                Menu cambiarTamanoItem = new Menu("Tamaño");
+                MenuItem tamanoItem = new MenuItem();
+                ComboBox MenuTamanoPicker = new ComboBox();
+                MenuTamanoPicker.getItems().addAll(6,7,8,9,10,12,14,16,18,20,24,28,32,36,48,72);
+                MenuTamanoPicker.setValue(textoATamano.get(textField));
+                
+                tamanoItem.setGraphic(MenuTamanoPicker);
+                cambiarTamanoItem.getItems().add(tamanoItem);
+                menuContext.getItems().add(cambiarTamanoItem);
+                
+                MenuTamanoPicker.valueProperty().addListener((obsV, oldV, newV) -> {
+                    textoATamano.put(textField, (Integer) newV);
+                    textField.setStyle("-fx-background-color: transparent; -fx-border-color: black; -fx-text-fill: #"+textoAColor.get(textField)+"; -fx-font-size: "+textoATamano.get(textField));
+                    
+                    double initialWidth = Math.max(150, textoATamano.get(textField) * 9);
+                    double charWidth = textoATamano.get(textField) * 0.5;
+                    double calculatedWidth = textField.getText().length() * charWidth + 30;
+                    double finalWidth = Math.max(initialWidth, calculatedWidth);
+
+                    textField.setPrefWidth(finalWidth);
+                });
+            } else {
+                Menu cambiarGrosorItem = new Menu("Grosor");
+                MenuItem grosorItem = new MenuItem();
+                Slider MenuGrosorSlider = new Slider();
+                MenuGrosorSlider.setMin(3); MenuGrosorSlider.setMax(10);
+                grosorItem.setGraphic(MenuGrosorSlider);
+                cambiarGrosorItem.getItems().add(grosorItem);
+                menuContext.getItems().add(cambiarGrosorItem);
+                
+                grosorItem.textProperty().bind(Bindings.format("%.1f px", MenuGrosorSlider.valueProperty()));
+                
+                if (node instanceof Circle circle) MenuGrosorSlider.setValue(circle.getRadius());
+                else if (node instanceof Line line) MenuGrosorSlider.setValue(line.getStrokeWidth());
+                else if (node instanceof Arc arc) MenuGrosorSlider.setValue(arc.getStrokeWidth());
+                
+                MenuGrosorSlider.valueProperty().addListener((obsV, oldV, newV) -> {
+                    if (node instanceof Circle circle) circle.setRadius((double) newV);
+                    else if (node instanceof Line line) line.setStrokeWidth((double) newV);
+                    else if (node instanceof Arc arc) arc.setStrokeWidth((double) newV);
+                });
+            }
+            
+            // Sección de Borrar
+            MenuItem borrarItem = new MenuItem("Eliminar"); menuContext.getItems().add(borrarItem);
             borrarItem.setOnAction(ev -> {
                 zoomGroup.getChildren().remove(node);
                 ev.consume();
             });
+
             menuContext.show(node, e.getSceneX(), e.getSceneY());
             e.consume();
         });

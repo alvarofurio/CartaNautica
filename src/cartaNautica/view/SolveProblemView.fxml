@@ -2,6 +2,7 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
@@ -33,30 +34,65 @@
                   <font>
                      <Font name="System Bold" size="12.0" />
                   </font></Label>
-                    <HBox alignment="CENTER" spacing="2">
+                    <HBox alignment="CENTER" spacing="5.0">
                         <fx:define>
                             <ToggleGroup fx:id="toolToggleGroup" />
                         </fx:define>
-                        <ToggleButton fx:id="pointToolButton" text="Punto">
+                        <ToggleButton fx:id="pointToolButton">
                      <toggleGroup>
                         <ToggleGroup fx:id="drawToggleGroup" />
                      </toggleGroup>
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></ToggleButton>
-                        <ToggleButton fx:id="lineToolButton" text="Línea" toggleGroup="$drawToggleGroup">
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoPunto.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></ToggleButton>
+                        <ToggleButton fx:id="lineToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></ToggleButton>
-                        <ToggleButton fx:id="arcToolButton" text="Arco" toggleGroup="$drawToggleGroup">
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoRecta.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></ToggleButton>
+                        <ToggleButton fx:id="arcToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></ToggleButton>
-                  <ToggleButton fx:id="posToolButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="Pos" toggleGroup="$drawToggleGroup" />
-                        <ToggleButton fx:id="textToolButton" text="Texto" toggleGroup="$drawToggleGroup">
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoArco.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></ToggleButton>
+                  <ToggleButton fx:id="posToolButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" toggleGroup="$drawToggleGroup">
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoLatLong.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></ToggleButton>
+                        <ToggleButton fx:id="textToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></ToggleButton>
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoTexto.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></ToggleButton>
                     </HBox>
                 </VBox>
                 
@@ -70,15 +106,38 @@
                   </font></Label>
                     <HBox alignment="CENTER" spacing="10">
                         <!-- Herramientas de medición -->
-                        <HBox alignment="CENTER" spacing="2">
-                            <ToggleButton fx:id="protractorToolButton" text="Transportador">
+                        <HBox alignment="CENTER" spacing="5.0">
+                            <ToggleButton fx:id="protractorToolButton">
                         <cursor>
                            <Cursor fx:constant="HAND" />
-                        </cursor></ToggleButton>
-                            <ToggleButton fx:id="rulerToolButton" text="Regla">
+                        </cursor>
+                        <graphic>
+                           <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../../resources/iconoTransportador.png" />
+                              </image>
+                              <viewport>
+                                 <Rectangle2D />
+                              </viewport>
+                           </ImageView>
+                        </graphic>
+                        <HBox.margin>
+                           <Insets />
+                        </HBox.margin></ToggleButton>
+                            <ToggleButton fx:id="rulerToolButton" depthTest="DISABLE">
                         <cursor>
                            <Cursor fx:constant="HAND" />
-                        </cursor></ToggleButton>
+                        </cursor>
+                        <graphic>
+                           <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 <Image url="@../../resources/iconoRegla.png" />
+                              </image>
+                           </ImageView>
+                        </graphic>
+                        <opaqueInsets>
+                           <Insets />
+                        </opaqueInsets></ToggleButton>
                         </HBox>
                         
                         <!-- Separador vertical entre herramientas y controles de rotación -->
@@ -105,15 +164,29 @@
                   <font>
                      <Font name="System Bold" size="12.0" />
                   </font></Label>
-                    <HBox alignment="CENTER" spacing="2">
-                        <ToggleButton fx:id="eraserToolButton" text="Borrador" toggleGroup="$drawToggleGroup">
+                    <HBox alignment="CENTER" spacing="5.0">
+                        <ToggleButton fx:id="eraserToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></ToggleButton>
-                        <Button fx:id="clearButton" onAction="#limpiarTodo" text="Limpiar todo">
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoGoma.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></ToggleButton>
+                        <Button fx:id="clearButton" onAction="#limpiarTodo">
                      <cursor>
                         <Cursor fx:constant="HAND" />
-                     </cursor></Button>
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoPapelera.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                     </HBox>
                 </VBox>
                 
@@ -133,7 +206,7 @@
                         <Label fx:id="sizeLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="52.0" text="Ancho:" />
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                              <Slider fx:id="sizeSelector" blockIncrement="0.1" max="10.0" min="2.0" prefWidth="100">
+                              <Slider fx:id="sizeSelector" blockIncrement="0.1" max="10.0" min="3.0" prefWidth="100" value="6.0">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor></Slider>
