@@ -12,9 +12,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="500.0" minWidth="600.0" prefHeight="500.0" prefWidth="600.0" styleClass="background" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.EditController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="600.0" prefHeight="700.0" prefWidth="600.0" styleClass="background" stylesheets="@../styles/styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.EditController">
 <top>
 <HBox alignment="CENTER" prefHeight="80.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" BorderPane.alignment="CENTER">
 <children>
@@ -92,11 +93,7 @@
 <Label alignment="CENTER_RIGHT" prefWidth="150.0" text="Avatar:" />
 <VBox alignment="CENTER" prefHeight="100.0" prefWidth="250.0">
 <children>
-<ImageView fx:id="avatarImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-<image>
-<Image url="@../resources/default_avatar.png" />
-</image>
-</ImageView>
+                        <Circle fx:id="circleImage" fill="WHITE" radius="55.0" stroke="BLACK" strokeType="INSIDE" />
 <Button fx:id="chooseAvatarButton" mnemonicParsing="false" onAction="#seleccionarImagen" style="-fx-background-color: #1976D2;" text="Seleccionar imagen" textFill="WHITE">
 <VBox.margin>
 <Insets top="10.0" />

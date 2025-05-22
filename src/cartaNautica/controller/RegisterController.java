@@ -35,6 +35,8 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Navigation;
@@ -56,8 +58,6 @@ public class RegisterController implements Initializable {
     @FXML
     private DatePicker birthDatePicker;
     @FXML
-    private ImageView avatarImageView;
-    @FXML
     private Button chooseAvatarButton;
     @FXML
     private Button registerButton;
@@ -75,11 +75,12 @@ public class RegisterController implements Initializable {
     private PasswordField confirmPasswordField;
     @FXML
     private TextField confirmPasswordVisibleField;
-    
     private Image avatarImage;
     private Image eyeOpenImage;
     private Image eyeClosedImage;
     private boolean passwordVisible = false;
+    @FXML
+    private Circle circleImage;
 
     /**
      * Initializes the controller class.
@@ -106,7 +107,7 @@ public class RegisterController implements Initializable {
         //Valores por defecto de los campos fecha nacimiento y avatar
         birthDatePicker.setValue(LocalDate.now().minusYears(16));
         avatarImage = new Image(getClass().getResourceAsStream("/resources/default_avatar.png"));
-        avatarImageView.setImage(avatarImage);
+        circleImage.setFill(new ImagePattern(avatarImage));
         
         // Listeners para quitar estilos de error cuando cambian los campos
         nicknameField.textProperty().addListener((obs, oldVal, newVal) -> {
@@ -219,7 +220,7 @@ public class RegisterController implements Initializable {
         File selectedFile = fileChooser.showOpenDialog(chooseAvatarButton.getScene().getWindow());
         if (selectedFile != null) {
             avatarImage = new Image(selectedFile.toURI().toString());
-            avatarImageView.setImage(avatarImage);
+            circleImage.setFill(new ImagePattern(avatarImage));
         }
     }
 
@@ -368,7 +369,7 @@ public class RegisterController implements Initializable {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         Stage miStage = PoiUPVApp.getStage();
-        miStage.setHeight(550);miStage.setWidth(500);
+        //miStage.setHeight(550);miStage.setWidth(500);
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.show();

@@ -39,9 +39,9 @@ public class PoiUPVApp extends Application {
         loader = new FXMLLoader(getClass().getResource("view/LoginView.fxml"));
         root = loader.load();
         Scene scene = new Scene(root);
-        miStage.setMinWidth(root.minWidth(-1));
-        miStage.setMinHeight(root.minHeight(-1));
-        miStage.setHeight(550);miStage.setWidth(500);
+        miStage.setMinWidth(600);
+        miStage.setMinHeight(735);
+        //miStage.setHeight(700);miStage.setWidth(600);
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - Inicio de sesión");
         miStage.show();

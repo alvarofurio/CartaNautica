@@ -46,9 +46,13 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -235,7 +239,7 @@ public class SolveProblemController implements Initializable {
         eraserToolButton.setOnAction(e -> {
             if (eraserToolButton.isSelected()) map_scrollpane.setCursor(eraserCursor); 
             else map_scrollpane.setCursor(Cursor.MOVE);
-        }); 
+        });
     }
 
     private void configurarZoom() {
@@ -346,11 +350,6 @@ public class SolveProblemController implements Initializable {
         rotationAngleLabel.textProperty().bind(Bindings.format("%.1f º", angleSlider.valueProperty())
 );
     
-    }
-
-    @FXML
-    private void goToProblems(ActionEvent event) throws IOException {
-        setScene("../view/ProblemView.fxml", "Problemas");
     }
 
     @FXML
@@ -677,11 +676,33 @@ public class SolveProblemController implements Initializable {
         setScene("../view/ProblemView.fxml", "Problemas");
     }
     
+    @FXML
+    private void ZoomShortCut(KeyEvent event) {
+        if (new KeyCharacterCombination("+", KeyCombination.CONTROL_ANY).match(event)) zoomIn((new ActionEvent()));
+        if (new KeyCharacterCombination("-", KeyCombination.CONTROL_ANY).match(event)) zoomOut((new ActionEvent()));
+    }
+    
+    
+    @FXML
+    private void goToProblems(ActionEvent event) throws IOException {
+        if (respuesta1.isSelected() || respuesta2.isSelected() || respuesta3.isSelected() || respuesta4.isSelected()){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Abandonar sin Resolver");
+            alert.setHeaderText("Pregunta no resuelta");
+            alert.setContentText("No has confirmado tu respuesta.\n¿Seguro que quieres abandonar el problema?");
+            
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() != ButtonType.OK) return;
+        }
+        setScene("../view/ProblemView.fxml", "Problemas");
+    }
+    
     public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
         Scene scene = new Scene(root);
         Stage miStage = PoiUPVApp.getStage();
+        miStage.setMinWidth(600);
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.setMaximized(false);

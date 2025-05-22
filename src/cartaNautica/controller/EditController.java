@@ -27,6 +27,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Navigation;
@@ -54,8 +56,6 @@ public class EditController implements Initializable {
     @FXML
     private DatePicker birthDatePicker;
     @FXML
-    private ImageView avatarImageView;
-    @FXML
     private Button chooseAvatarButton;
     @FXML
     private Button confirmButton;
@@ -67,6 +67,8 @@ public class EditController implements Initializable {
     private Image eyeClosedImage;
     private boolean passwordVisible = false;
     User user;
+    @FXML
+    private Circle circleImage;
 
     
     /**
@@ -89,7 +91,7 @@ public class EditController implements Initializable {
         passwordField.setText(user.getPassword()); // Capaz este campo mejor si no se inicializa a la contraseña anterior + ¿Añadir doble campo de contraseña como cuando la cambias en aplicaciones?
         birthDatePicker.setValue(user.getBirthdate());
         avatarImage=user.getAvatar();
-        avatarImageView.setImage(user.getAvatar());
+        circleImage.setFill(new ImagePattern(avatarImage));
         
         // Deshabilitar campo nombre de usuario (no se puede modificar)
         nicknameField.setDisable(true);
@@ -177,7 +179,7 @@ public class EditController implements Initializable {
         File selectedFile = fileChooser.showOpenDialog(chooseAvatarButton.getScene().getWindow());
         if (selectedFile != null) {
             avatarImage = new Image(selectedFile.toURI().toString());
-            avatarImageView.setImage(avatarImage);
+            circleImage.setFill(new ImagePattern(avatarImage));
         }
     }
 

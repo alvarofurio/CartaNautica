@@ -23,7 +23,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.SolveProblemController">
+<BorderPane minHeight="700.0" minWidth="1250.0" onKeyPressed="#ZoomShortCut" prefHeight="700.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.SolveProblemController">
     <center>
         <VBox spacing="5">
             <!-- Barra de herramientas estilo Word con grupos verticales -->
@@ -206,7 +206,7 @@
                         <Label fx:id="sizeLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="52.0" text="Ancho:" />
                   <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                              <Slider fx:id="sizeSelector" blockIncrement="0.1" max="10.0" min="3.0" prefWidth="100" value="6.0">
+                              <Slider fx:id="sizeSelector" blockIncrement="0.1" max="10.0" min="3.0" prefWidth="100" value="5.0">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor></Slider>

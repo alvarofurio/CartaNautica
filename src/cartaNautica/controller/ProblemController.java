@@ -159,7 +159,7 @@ public class ProblemController implements Initializable {
         Stage miStage = PoiUPVApp.getStage();
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
-        if (clave.equals("Mapa de problemas")) miStage.setMaximized(true);
+        if (clave.equals("Mapa de problemas")) {miStage.setMaximized(true); miStage.setMinWidth(1250);}
         miStage.show();
     }
 }
