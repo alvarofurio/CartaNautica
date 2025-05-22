@@ -466,19 +466,7 @@ public class SolveProblemController implements Initializable {
             linea.setEndY(Y);
             event.consume();
         } else if(arcToolButton.isSelected()){
-            /*Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
-            Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
-            
-            double radio = Math.sqrt(Math.pow(X-arco.getCenterX(), 2)+ Math.pow(Y-arco.getCenterY(), 2));
-            arco.setRadiusX(radio); arco.setRadiusY(radio);
-            double dx = X - arco.getCenterX();
-            double dy = Y - arco.getCenterY();
-            double angle = Math.toDegrees(Math.atan2(-dy, dx))-90;
-            while (angle < 0) angle += 360;
-            angle %= 360;
-            arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
-            event.consume();*/
-            
+                       
             Double w = bounds.getWidth();
             Double h = bounds.getHeight();
             Double xr = Math.max(0, Math.min(pointInZoomGroup.getX(), w));
@@ -486,23 +474,25 @@ public class SolveProblemController implements Initializable {
             Double xc = arco.getCenterX();
             Double yc = arco.getCenterY();
  
-            Double alpha = Math.atan2(yr - yc, xr - xc);
+            Double alpha = - Math.atan2(yr - yc, xr - xc);
  
             Double cosmaxx = Math.abs( (Double) Math.cos(Math.PI/2 -  alpha) );
             Double cosminx = cosmaxx;
- 
+           
             if (alpha - Math.PI/2 <= 0 && alpha + Math.PI/2 >= 0) {cosmaxx = 1.0;}
-            if (alpha - Math.PI/2 <= Math.PI && alpha + Math.PI/2 >= Math.PI) {cosminx = 1.0;}
+            else {cosminx = 1.0;}
+            
             Double sinmaxy = Math.abs( (Double) Math.sin(Math.PI/2 -  alpha) );
-            Double sinminy = cosmaxx;
+            Double sinminy = sinmaxy;
  
             if (alpha - Math.PI/2 <= Math.PI/2 && alpha + Math.PI/2 >= Math.PI/2) {sinmaxy = 1.0;}
-            if (alpha - Math.PI/2 <= - Math.PI/2 && alpha + Math.PI/2 >= - Math.PI/2) {sinminy = 1.0;}
+            else {sinminy = 1.0;}
+               
             Double r = Math.sqrt(Math.pow(xr - xc, 2) + Math.pow(yr - yc, 2));
- 
+            
             double maxR = Math.min(
                 r ,
-                Math.min( Math.min((w-xc)/cosmaxx, xc/cosminx), Math.min((h-yc)/sinmaxy, yc/sinminy))
+                Math.min( Math.min((w-xc)/cosmaxx, xc/cosminx), Math.min((h-yc)/sinminy, yc/sinmaxy))
             );
  
             arco.setRadiusX(maxR); arco.setRadiusY(maxR);
