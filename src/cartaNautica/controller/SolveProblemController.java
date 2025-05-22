@@ -405,10 +405,12 @@ public class SolveProblemController implements Initializable {
             lineaHor = new Line(0, pointInZoomGroup.getY(), bounds.getWidth(), pointInZoomGroup.getY());
             lineaHor.setStroke(colorPicker.getValue());
             lineaHor.setStrokeWidth(sizeSelector.getValue());
+            //lineaHor.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
 
             lineaVer = new Line(pointInZoomGroup.getX(), 0, pointInZoomGroup.getX(), bounds.getHeight());
             lineaVer.setStroke(colorPicker.getValue());
             lineaVer.setStrokeWidth(sizeSelector.getValue());
+            //lineaVer.getStrokeDashArray().addAll(5.0, 5.0+sizeSelector.getValue());
             
             zoomGroup.getChildren().add(lineaHor);
             zoomGroup.getChildren().add(lineaVer);
@@ -427,14 +429,23 @@ public class SolveProblemController implements Initializable {
             texto.requestFocus();
             texto.setAlignment(Pos.CENTER);
 
-            texto.textProperty().addListener((observable, oldValue, newValue) -> {
-                // Calcular un ancho mínimo razonable
-                double minWidth = 100;
-                // Estimar ancho según caracteres (ajusta el multiplicador según la fuente)
-                double estimatedWidth = Math.max(minWidth, newValue.length() * (fontSize * 0.5) + 20);
-                texto.setPrefWidth(estimatedWidth);
+            double initialWidth = Math.max(150, fontSize * 9);
+            texto.setPrefWidth(initialWidth);
+
+            // Crear binding simple sin interferir con el cursor
+            texto.textProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal == null || newVal.isEmpty()) {
+                    texto.setPrefWidth(initialWidth);
+                } else {
+                    // Cálculo simple: caracteres * factor basado en tamaño de fuente + padding
+                    double charWidth = fontSize * 0.5; // Aproximación conservadora
+                    double calculatedWidth = newVal.length() * charWidth + 30; // 40px de padding
+                    double finalWidth = Math.max(initialWidth, calculatedWidth);
+
+                    texto.setPrefWidth(finalWidth);
+                }
             });
-            
+
             texto.focusedProperty().addListener((obsV, oldV, newV)-> {
                 if (newV) texto.setStyle(texto.getStyle()+"; -fx-background-color: transparent; -fx-border-color: black");
                 else {
@@ -442,7 +453,7 @@ public class SolveProblemController implements Initializable {
                     if (texto.getText().equals("")) zoomGroup.getChildren().remove(texto);
                 }
             });
-            
+
             texto.setOnAction(e -> {
                texto.getScene().getRoot().requestFocus();
             });
@@ -466,7 +477,19 @@ public class SolveProblemController implements Initializable {
             linea.setEndY(Y);
             event.consume();
         } else if(arcToolButton.isSelected()){
-                       
+            /*Double X = Math.max(0, Math.min(pointInZoomGroup.getX(), bounds.getWidth()));
+            Double Y = Math.max(0, Math.min(pointInZoomGroup.getY(), bounds.getHeight()));
+            
+            double radio = Math.sqrt(Math.pow(X-arco.getCenterX(), 2)+ Math.pow(Y-arco.getCenterY(), 2));
+            arco.setRadiusX(radio); arco.setRadiusY(radio);
+            double dx = X - arco.getCenterX();
+            double dy = Y - arco.getCenterY();
+            double angle = Math.toDegrees(Math.atan2(-dy, dx))-90;
+            while (angle < 0) angle += 360;
+            angle %= 360;
+            arco.setStartAngle(angle); // Restamos 90 para calcular el ángulo del extremo derecho del arco
+            event.consume();*/
+            
             Double w = bounds.getWidth();
             Double h = bounds.getHeight();
             Double xr = Math.max(0, Math.min(pointInZoomGroup.getX(), w));
@@ -478,18 +501,16 @@ public class SolveProblemController implements Initializable {
  
             Double cosmaxx = Math.abs( (Double) Math.cos(Math.PI/2 -  alpha) );
             Double cosminx = cosmaxx;
-           
+ 
             if (alpha - Math.PI/2 <= 0 && alpha + Math.PI/2 >= 0) {cosmaxx = 1.0;}
             else {cosminx = 1.0;}
-            
             Double sinmaxy = Math.abs( (Double) Math.sin(Math.PI/2 -  alpha) );
             Double sinminy = sinmaxy;
  
             if (alpha - Math.PI/2 <= Math.PI/2 && alpha + Math.PI/2 >= Math.PI/2) {sinmaxy = 1.0;}
             else {sinminy = 1.0;}
-               
             Double r = Math.sqrt(Math.pow(xr - xc, 2) + Math.pow(yr - yc, 2));
-            
+ 
             double maxR = Math.min(
                 r ,
                 Math.min( Math.min((w-xc)/cosmaxx, xc/cosminx), Math.min((h-yc)/sinminy, yc/sinmaxy))
@@ -530,6 +551,7 @@ public class SolveProblemController implements Initializable {
             for (int i = 1; i<size; i++) zoomGroup.getChildren().remove(1);
             System.out.println(zoomGroup.getChildren());
         }
+        
     }
     
     private void configurarEventosEliminacion(Node node) {
