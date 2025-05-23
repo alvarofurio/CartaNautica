@@ -14,6 +14,7 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -51,7 +52,10 @@
                               <Image url="@../../resources/iconoPunto.png" />
                            </image>
                         </ImageView>
-                     </graphic></ToggleButton>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Punto" />
+                     </tooltip></ToggleButton>
                         <ToggleButton fx:id="lineToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -62,7 +66,10 @@
                               <Image url="@../../resources/iconoRecta.png" />
                            </image>
                         </ImageView>
-                     </graphic></ToggleButton>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Línea" />
+                     </tooltip></ToggleButton>
                         <ToggleButton fx:id="arcToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -73,7 +80,10 @@
                               <Image url="@../../resources/iconoArco.png" />
                            </image>
                         </ImageView>
-                     </graphic></ToggleButton>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Arco" />
+                     </tooltip></ToggleButton>
                   <ToggleButton fx:id="posToolButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" toggleGroup="$drawToggleGroup">
                      <graphic>
                         <ImageView fitHeight="15.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -81,7 +91,10 @@
                               <Image url="@../../resources/iconoLatLong.png" />
                            </image>
                         </ImageView>
-                     </graphic></ToggleButton>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Cruz" />
+                     </tooltip></ToggleButton>
                         <ToggleButton fx:id="textToolButton" toggleGroup="$drawToggleGroup">
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -92,7 +105,10 @@
                               <Image url="@../../resources/iconoTexto.png" />
                            </image>
                         </ImageView>
-                     </graphic></ToggleButton>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Texto" />
+                     </tooltip></ToggleButton>
                     </HBox>
                 </VBox>
                 
@@ -123,7 +139,10 @@
                         </graphic>
                         <HBox.margin>
                            <Insets />
-                        </HBox.margin></ToggleButton>
+                        </HBox.margin>
+                        <tooltip>
+                           <Tooltip text="Transportador" />
+                        </tooltip></ToggleButton>
                             <ToggleButton fx:id="rulerToolButton" depthTest="DISABLE">
                         <cursor>
                            <Cursor fx:constant="HAND" />
@@ -137,7 +156,10 @@
                         </graphic>
                         <opaqueInsets>
                            <Insets />
-                        </opaqueInsets></ToggleButton>
+                        </opaqueInsets>
+                        <tooltip>
+                           <Tooltip text="Regla" />
+                        </tooltip></ToggleButton>
                         </HBox>
                         
                         <!-- Separador vertical entre herramientas y controles de rotación -->
@@ -175,7 +197,10 @@
                               <Image url="@../../resources/iconoGoma.png" />
                            </image>
                         </ImageView>
-                     </graphic></ToggleButton>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Goma de borrar" />
+                     </tooltip></ToggleButton>
                         <Button fx:id="clearButton" onAction="#limpiarTodo">
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -186,7 +211,10 @@
                               <Image url="@../../resources/iconoPapelera.png" />
                            </image>
                         </ImageView>
-                     </graphic></Button>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Borrar todo" />
+                     </tooltip></Button>
                     </HBox>
                 </VBox>
                 

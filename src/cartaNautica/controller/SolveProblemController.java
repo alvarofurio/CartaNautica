@@ -270,7 +270,6 @@ public class SolveProblemController implements Initializable {
         map_scrollpane.setPannable(true);
     }
     
-
     private void zoom(double scaleValue) {
         // Guardar valores de scroll antes del escalado
         double scrollH = map_scrollpane.getHvalue();
