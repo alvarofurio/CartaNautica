@@ -61,6 +61,7 @@ import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Answer;
 
@@ -160,6 +161,10 @@ public class SolveProblemController implements Initializable {
     
     private HashMap<TextField, String> textoAColor = new HashMap<>();
     private HashMap<TextField, Integer> textoATamano = new HashMap<>();
+    @FXML
+    private Separator separador1;
+    @FXML
+    private Button infoButton;
 
     /**
      * Initializes the controller class.
@@ -569,7 +574,6 @@ public class SolveProblemController implements Initializable {
             else if (node instanceof Arc arc) currentColor = (Color) arc.getStroke();
             else if (node instanceof TextField textField) currentColor = Color.valueOf(textoAColor.get(textField));
             MenuColorPicker.setValue(currentColor);
-            
             colorItem.setGraphic(MenuColorPicker);
             cambiarColorItem.getItems().add(colorItem);
             menuContext.getItems().add(cambiarColorItem);
@@ -694,6 +698,22 @@ public class SolveProblemController implements Initializable {
             if (result.isPresent() && result.get() != ButtonType.OK) return;
         }
         setScene("../view/ProblemView.fxml", "Problemas");
+    }
+    
+    @FXML
+    private void goToInfo(ActionEvent event) throws IOException {
+        FXMLLoader miCargador = new FXMLLoader(getClass().getResource("../view/InfoView.fxml"));
+        Parent root = miCargador.load();
+        
+        //acceso al controlador de datos persona
+        //InfoController controlador2 = miCargador.getController();
+        
+        Scene scene = new Scene(root,700,600);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Carta Náutica -  Información");
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
     
     public void setScene(String ruta, String clave) throws IOException {
