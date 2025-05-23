@@ -708,8 +708,11 @@ public class SolveProblemController implements Initializable {
         //acceso al controlador de datos persona
         //InfoController controlador2 = miCargador.getController();
         
-        Scene scene = new Scene(root,700,600);
+        Scene scene = new Scene(root,780,700);
         Stage stage = new Stage();
+        stage.setMinWidth(700); stage.setMinHeight(835);
+        stage.setMaxWidth(700); stage.setMaxHeight(835);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.setTitle("Carta Náutica -  Información");
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -721,10 +724,11 @@ public class SolveProblemController implements Initializable {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         Stage miStage = PoiUPVApp.getStage();
-        miStage.setMinWidth(600);
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
         miStage.setMaximized(false);
+        miStage.setMinWidth(600);
+        miStage.setMinHeight(735);
         miStage.show();
     }
     

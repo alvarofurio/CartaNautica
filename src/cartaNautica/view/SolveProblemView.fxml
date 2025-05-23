@@ -244,28 +244,34 @@
                   <Label fx:id="anchoLabel" prefHeight="17.0" prefWidth="45.0" text="3" />
                     </HBox>
                 </VBox>
-            <Separator fx:id="separador1" orientation="VERTICAL" />
-            <VBox alignment="CENTER" spacing="3">
+            <HBox alignment="CENTER_RIGHT" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                <children>
-                  <Label styleClass="tool-group-header" text="Información">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="infoButton" mnemonicParsing="false" onAction="#goToInfo">
-                     <graphic>
-                        <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../resources/information-button.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                     <tooltip>
-                        <Tooltip text="Información" />
-                     </tooltip>
-                  </Button>
+                  <VBox alignment="CENTER" spacing="3">
+                     <children>
+                        <Label styleClass="tool-group-header" text="Ayuda">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="infoButton" mnemonicParsing="false" onAction="#goToInfo">
+                           <graphic>
+                              <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../resources/information-button.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                           <tooltip>
+                              <Tooltip text="Información" />
+                           </tooltip>
+                        </Button>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
+               <padding>
+                  <Insets right="15.0" />
+               </padding>
+            </HBox>
             </HBox>
             
             <!-- Contenedor principal con la carta y el panel lateral -->

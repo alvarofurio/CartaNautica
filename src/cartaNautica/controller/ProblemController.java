@@ -30,6 +30,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import java.util.Random;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import model.NavDAOException;
 import model.Navigation;
 import model.Problem;
@@ -107,6 +110,8 @@ public class ProblemController implements Initializable {
        
         // Botón deshabilitado mientras no tengas un problema seleccionado
         solveButton.disableProperty().bind(Bindings.equal(-1,problemsTable.getSelectionModel().selectedIndexProperty()));
+        
+        problemsTable.setOnKeyPressed(this::pressEnter);
     }    
  
 
@@ -117,7 +122,7 @@ public class ProblemController implements Initializable {
     }
 
     @FXML
-    private void goToResults(ActionEvent event) throws IOException {
+    private void goToResults(MouseEvent event) throws IOException {
         setScene("../view/ResultsView.fxml", "Resultados");
     }
 
@@ -159,7 +164,18 @@ public class ProblemController implements Initializable {
         Stage miStage = PoiUPVApp.getStage();
         miStage.setScene(scene);
         miStage.setTitle("Carta Náutica - "+clave);
-        if (clave.equals("Mapa de problemas")) {miStage.setMaximized(true); miStage.setMinWidth(1250);}
+        if (clave.equals("Mapa de problemas")) {miStage.setMaximized(true); miStage.setMinWidth(1250); miStage.setMinHeight(735);}
         miStage.show();
+    }
+    
+    private void pressEnter(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER && !solveButton.isDisabled()) {
+            try {
+                selectProblem(new ActionEvent());
+            } catch (IOException e) {
+                error("Error", "Error al Abrir el Problema", e.getMessage());
+            }
+        }
+        event.consume();
     }
 }

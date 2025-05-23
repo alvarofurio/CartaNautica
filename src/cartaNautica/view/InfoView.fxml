@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="600.0" prefHeight="700.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.InfoController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="700.0" prefHeight="800.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.InfoController">
    <top>
       <HBox alignment="CENTER" prefHeight="80.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" BorderPane.alignment="CENTER">
          <children>
@@ -30,7 +33,150 @@
       </HBox>
    </top>
    <center>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER" />
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="TOP_LEFT">
+         <children>
+            <Label text="Herramientas y Atajos">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Region prefHeight="12.0" prefWidth="660.0" />
+            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="25.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoPunto.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="La herramienta Punto te permite dibujar puntos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo sobre el mapa." textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" wrapText="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="22.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoRecta.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="La herramienta Recta te permite dibujar rectas sobre la carta náutica. Para ello, tras seleccionar la herramienta, haz clic izquierdo donde quieras iniciar la recta, arrastra el ratón manteniendo el clic hasta el extremo donde quieras finalizarla y suelta el botón." textAlignment="JUSTIFY" wrapText="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="22.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoArco.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="La herramienta Arco te permite dibujar arcos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo donde quieras posicionar el centro del arco, arrastra manteniendo el clic para elegir el radio y orientación del arco y suelta para fijar el arco." textAlignment="JUSTIFY" wrapText="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="26.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoLatLong.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="La herramienta Coordenadas te permite conocer las coordenadas de un punto sobre el mapa. Para ello, tras seleccionar la herramienta, haz clic izquierdo sobre el punto del que quieras conocer su latitud y longitud: se dibujarán dos rectas que cortarán perpendicularmente los bordes de la carta, cortando la latitud en la escala vertical y la longitud en la escala horizontal." textAlignment="JUSTIFY" wrapText="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" spacing="26.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoTexto.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="La herramienta Texto te permite escribir cuadros de texto sobre la carta náutica. Para ello, tras seleccionar la herramienta, haz clic izquierdo donde quieras posicionar el texto y empieza a escribir. Podrás editar el contenido del cuadro de texto siempre que quieras." textAlignment="JUSTIFY" wrapText="true" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="22.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoTransportador.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="Muestra un transportador sobre la carta náutica para medir ángulos." />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="28.0">
+               <children>
+                  <ImageView fitHeight="20.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../resources/iconoRegla.png" />
+                     </image>
+                  </ImageView>
+                  <Label text="Muestra una regla sobre la carta náutica para tomar distancias en el mapa. Esta regla se puede rotar." />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="4.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="43.0" text="Estilo">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="479.0" text="El apartado estilo permite modificar las características de color y tamaño de las distintas herramientas." textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <HBox alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" spacing="2.0">
+               <children>
+                  <Label prefHeight="17.0" prefWidth="45.0" text="Atajos">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="479.0" text="Utiliza clic derecho sobre las distintas marcas hechas en la carta náutica para modificar su estilo o borrarlas. Utiliza CTRL y +/- para aumentar/disminuir el zoom en la carta náutica." textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+               </padding>
+            </HBox>
+            <Region prefHeight="7.0" prefWidth="660.0" />
+            <Button fx:id="closeButton" mnemonicParsing="false" onAction="#closeWindow" style="-fx-background-color: #0D47A1;" text="Cerrar" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Button>
+         </children>
+         <BorderPane.margin>
+            <Insets left="20.0" right="20.0" />
+         </BorderPane.margin>
+      </VBox>
    </center>
    <bottom>
       <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" BorderPane.alignment="CENTER">
