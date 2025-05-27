@@ -702,7 +702,7 @@ public class SolveProblemController implements Initializable {
     
     @FXML
     private void goToInfo(ActionEvent event) throws IOException {
-        FXMLLoader miCargador = new FXMLLoader(getClass().getResource("../view/InfoView.fxml"));
+        FXMLLoader miCargador = new FXMLLoader(getClass().getResource("../view/InfoView_1.fxml"));
         Parent root = miCargador.load();
         
         //acceso al controlador de datos persona

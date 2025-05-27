@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="800.0" minWidth="700.0" prefHeight="800.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cartaNautica.controller.Info1Controller">
+   <top>
+      <HBox alignment="CENTER" prefHeight="80.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../resources/upv_nbg.png" />
+               </image>
+            </ImageView>
+            <Label text="Información" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="24.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="20.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </top>
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: #0D47A1;" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Interfaces Persona Computador 2025 - UPV" textFill="WHITE" />
+         </children>
+      </HBox>
+   </bottom>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" prefHeight="63.0" prefWidth="700.0" spacing="15" style="-fx-padding: 5 10 5 10; -fx-background-color: #f0f0f0;">
+               <children>
+                  <ToggleButton fx:id="pointButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="50.0">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoPunto.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Punto" />
+                     </tooltip>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="infoToggleGroup" />
+                     </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton fx:id="lineButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="50.0" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoRecta.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Recta" />
+                     </tooltip>
+                  </ToggleButton>
+                  <ToggleButton fx:id="arcButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="50.0" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoArco.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Arco" />
+                     </tooltip>
+                  </ToggleButton>
+                  <ToggleButton fx:id="positionButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="50.0" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="35.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoLatLong.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Ćoordenadas" />
+                     </tooltip>
+                  </ToggleButton>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <ToggleButton fx:id="transButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="50.0" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoTransportador.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Transportador" />
+                     </tooltip>
+                  </ToggleButton>
+                  <ToggleButton fx:id="reglaButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="50.0" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/iconoRegla.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Regla" />
+                     </tooltip>
+                  </ToggleButton>
+                  <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <ToggleButton fx:id="estiloButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="75.0" text="Estilo" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </ToggleButton>
+                  <ToggleButton fx:id="atajosButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="75.0" text="Atajos" toggleGroup="$infoToggleGroup">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </ToggleButton>
+               </children>
+            </HBox>
+            <Label fx:id="titleLabel" alignment="CENTER" prefHeight="18.0" prefWidth="712.0" text="Punto">
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="36.0" />
+               </font>
+            </Label>
+            <Label fx:id="descLabel" text="La herramienta Punto te permite dibujar puntos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo sobre el mapa." textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" wrapText="true">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" top="15.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets left="15.0" right="10.0" />
+               </padding>
+            </Label>
+            <VBox alignment="CENTER" prefHeight="421.0" prefWidth="700.0">
+               <children>
+                  <MediaView fx:id="videoViewer" fitHeight="400.0" fitWidth="600.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </MediaView>
+               </children>
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
