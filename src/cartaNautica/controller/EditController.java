@@ -233,7 +233,7 @@ public class EditController implements Initializable {
             user.setAvatar(avatarImage);
             user.setBirthdate(birthDate);
             informacion("Éxito", "Cambios registrados", "Los cambios se han registrado correctamente.");
-            setScene(PoiUPVApp.getPrev()?"Problemas":"Resultados", PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml");
+            setScene(PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml", PoiUPVApp.getPrev()?"Problemas":"Resultados");
         } catch (Exception e) {
             error("Error", "Error de registro", "Se produjo un error al intentar registrar: " + e.getMessage());
         }
@@ -241,7 +241,7 @@ public class EditController implements Initializable {
 
     @FXML
     private void descartar(ActionEvent event) throws IOException {
-        setScene(PoiUPVApp.getPrev()?"Problemas":"Resultados", PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml");
+        setScene(PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml", PoiUPVApp.getPrev()?"Problemas":"Resultados");
     }
     
     private void error(String title, String header, String content) {
@@ -260,7 +260,7 @@ public class EditController implements Initializable {
         alert.showAndWait();
     }
     
-    public void setScene(String clave, String ruta) throws IOException {
+    public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
 
