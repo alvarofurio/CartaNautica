@@ -233,7 +233,7 @@ public class EditController implements Initializable {
             user.setAvatar(avatarImage);
             user.setBirthdate(birthDate);
             informacion("Éxito", "Cambios registrados", "Los cambios se han registrado correctamente.");
-            setScene(PoiUPVApp.getPrev()?"Problemas":"Resultados");
+            setScene(PoiUPVApp.getPrev()?"Problemas":"Resultados", PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml");
         } catch (Exception e) {
             error("Error", "Error de registro", "Se produjo un error al intentar registrar: " + e.getMessage());
         }
@@ -241,7 +241,7 @@ public class EditController implements Initializable {
 
     @FXML
     private void descartar(ActionEvent event) throws IOException {
-        setScene(PoiUPVApp.getPrev()?"Problemas":"Resultados");
+        setScene(PoiUPVApp.getPrev()?"Problemas":"Resultados", PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml");
     }
     
     private void error(String title, String header, String content) {
@@ -260,13 +260,39 @@ public class EditController implements Initializable {
         alert.showAndWait();
     }
     
-    public void setScene(String clave) throws IOException  {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(PoiUPVApp.getPrev()?"../view/ProblemView.fxml":"../view/ResultsView.fxml"));
+    public void setScene(String clave, String ruta) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
-        Scene scene = new Scene(root);
+
         Stage miStage = PoiUPVApp.getStage();
+
+        boolean wasMaximized = miStage.isMaximized();
+        if (!miStage.getTitle().equals("Carta Náutica - Mapa de problemas")){
+            PoiUPVApp.currentHeight = miStage.getHeight();
+            PoiUPVApp.currentWidth = miStage.getWidth();
+        }
+        
+        // Crear y establecer la nueva escena
+        Scene scene = new Scene(root);
         miStage.setScene(scene);
-        miStage.setTitle("Carta Náutica - "+clave);
+        miStage.setTitle("Carta Náutica - " + clave);
+
+        // Casos especiales donde queremos cambiar el tamaño
+        if (clave.equals("Mapa de problemas")) {
+            miStage.setMaximized(true);
+            miStage.setMinWidth(1250);
+            miStage.setMinHeight(735);
+        } else {
+            miStage.setMinWidth(600);
+            miStage.setMinHeight(735);
+            if (wasMaximized) {
+                miStage.setMaximized(false);
+            } else {
+                miStage.setWidth(PoiUPVApp.currentWidth);
+                miStage.setHeight(PoiUPVApp.currentHeight);
+            }
+        }
+
         miStage.show();
     }
     

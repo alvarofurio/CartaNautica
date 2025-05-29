@@ -29,6 +29,9 @@ public class PoiUPVApp extends Application {
     private static int aciertos = 0;
     private static int fallos = 0;
     
+    public static double currentWidth;
+    public static double currentHeight;
+    
     @Override
     public void start(Stage stage) throws Exception {
         Parent root;

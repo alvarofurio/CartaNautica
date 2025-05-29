@@ -719,19 +719,43 @@ public class SolveProblemController implements Initializable {
         stage.showAndWait();
     }
     
+    
     public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
-        Scene scene = new Scene(root);
+
         Stage miStage = PoiUPVApp.getStage();
+
+        boolean wasMaximized = miStage.isMaximized();
+        if (!miStage.getTitle().equals("Carta Náutica - Mapa de problemas")){
+            PoiUPVApp.currentHeight = miStage.getHeight();
+            PoiUPVApp.currentWidth = miStage.getWidth();
+        }
+        
+        // Crear y establecer la nueva escena
+        Scene scene = new Scene(root);
         miStage.setScene(scene);
-        miStage.setTitle("Carta Náutica - "+clave);
-        miStage.setMaximized(false);
-        miStage.setMinWidth(600);
-        miStage.setMinHeight(735);
+        miStage.setTitle("Carta Náutica - " + clave);
+
+        // Casos especiales donde queremos cambiar el tamaño
+        if (clave.equals("Mapa de problemas")) {
+            miStage.setMaximized(true);
+            miStage.setMinWidth(1250);
+            miStage.setMinHeight(735);
+        } else {
+            miStage.setMinWidth(600);
+            miStage.setMinHeight(735);
+            if (wasMaximized) {
+                miStage.setMaximized(false);
+            } else {
+                miStage.setWidth(PoiUPVApp.currentWidth);
+                miStage.setHeight(PoiUPVApp.currentHeight);
+            }
+        }
+
         miStage.show();
     }
-    
+
     private void error(String title, String header, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

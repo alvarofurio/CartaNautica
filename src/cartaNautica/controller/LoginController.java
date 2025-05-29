@@ -136,14 +136,39 @@ public class LoginController implements Initializable {
         setScene("../view/RegisterView.fxml","Registro");
     }
     
-    public void setScene(String ruta, String clave) throws IOException  {
+    public void setScene(String ruta, String clave) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(ruta));
         Parent root = loader.load();
-        Scene scene = new Scene(root);
+
         Stage miStage = PoiUPVApp.getStage();
-        //if (clave.equals("Registro")){miStage.setHeight(700);miStage.setWidth(500);}
+
+        boolean wasMaximized = miStage.isMaximized();
+        if (!miStage.getTitle().equals("Carta Náutica - Mapa de problemas")){
+            PoiUPVApp.currentHeight = miStage.getHeight();
+            PoiUPVApp.currentWidth = miStage.getWidth();
+        }
+        
+        // Crear y establecer la nueva escena
+        Scene scene = new Scene(root);
         miStage.setScene(scene);
-        miStage.setTitle("Carta Náutica - "+clave);
+        miStage.setTitle("Carta Náutica - " + clave);
+
+        // Casos especiales donde queremos cambiar el tamaño
+        if (clave.equals("Mapa de problemas")) {
+            miStage.setMaximized(true);
+            miStage.setMinWidth(1250);
+            miStage.setMinHeight(735);
+        } else {
+            miStage.setMinWidth(600);
+            miStage.setMinHeight(735);
+            if (wasMaximized) {
+                miStage.setMaximized(false);
+            } else {
+                miStage.setWidth(PoiUPVApp.currentWidth);
+                miStage.setHeight(PoiUPVApp.currentHeight);
+            }
+        }
+
         miStage.show();
     }
     
