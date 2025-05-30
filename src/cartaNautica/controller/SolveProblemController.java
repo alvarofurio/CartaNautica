@@ -710,8 +710,8 @@ public class SolveProblemController implements Initializable {
         
         Scene scene = new Scene(root,780,700);
         Stage stage = new Stage();
-        stage.setMinWidth(700); stage.setMinHeight(860);
-        stage.setMaxWidth(700); stage.setMaxHeight(860);
+        stage.setMinWidth(700); stage.setMinHeight(865);
+        stage.setMaxWidth(700); stage.setMaxHeight(865);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.setTitle("Carta Náutica -  Información");

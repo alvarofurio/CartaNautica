@@ -16,6 +16,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -88,6 +91,7 @@ public class Info1Controller implements Initializable {
         vboxNoVideo.visibleProperty().bind(infoToggleGroup.selectedToggleProperty().isNull());
         
         infoToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            videoViewer.setMediaPlayer(null);
             if (newValue == null) {
                 //No tiene que hacer nada: Ya lo hace el Binding
             } else if (newValue.equals(pointButton)) {
@@ -95,7 +99,7 @@ public class Info1Controller implements Initializable {
                 descLabel.setText(puntoLabel.getText());
 
                 Media media = new Media(getClass().getResource("/resources/vidPunto.mp4").toExternalForm());
-
+                
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
@@ -105,7 +109,7 @@ public class Info1Controller implements Initializable {
                 titleLabel.setText("Recta");
                 descLabel.setText(rectaLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidRecta.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
@@ -116,7 +120,7 @@ public class Info1Controller implements Initializable {
                 titleLabel.setText("Arco");
                 descLabel.setText(arcLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidArco.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
@@ -127,47 +131,51 @@ public class Info1Controller implements Initializable {
                 titleLabel.setText("Coordenadas");
                 descLabel.setText(posLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidCoord.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                mediaPlayer.play();
            } else if (newValue.equals(transButton)) {
                 titleLabel.setText("Transportador");
                 descLabel.setText(protractorLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidTrans.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                mediaPlayer.play();
            } else if (newValue.equals(reglaButton)) {
                 titleLabel.setText("Regla");
                 descLabel.setText(reglaLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidRegla.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                mediaPlayer.play();
            } else if (newValue.equals(estiloButton)) {
                 titleLabel.setText("Estilo");
                 descLabel.setText(estiloLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidEstilo.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                mediaPlayer.play();
            } else if (newValue.equals(atajosButton)) {
                 titleLabel.setText("Atajos");
                 descLabel.setText(atajosLabel.getText());
 
-                Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+                Media media = new Media(getClass().getResource("/resources/vidAtajos.mp4").toExternalForm());
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
-
                 videoViewer.setMediaPlayer(mediaPlayer);
+                mediaPlayer.play();
            }
         });
     }    
@@ -175,6 +183,20 @@ public class Info1Controller implements Initializable {
     @FXML
     private void closeWindow(ActionEvent event) {
         closeButton.getScene().getWindow().hide();
+    }
+
+    @FXML
+    private void SecretShortcut(KeyEvent event) {
+        if ((new KeyCharacterCombination("p", KeyCombination.CONTROL_ANY)).match(event) && infoToggleGroup.getSelectedToggle().equals(pointButton)) {
+            titleLabel.setText("Amo al primo");
+            descLabel.setText("Amo al primo de Brawl Stars.");
+
+            Media media = new Media(getClass().getResource("/resources/vid2.mp4").toExternalForm());
+
+            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            videoViewer.setMediaPlayer(mediaPlayer);
+            mediaPlayer.play();
+        }
     }
     
 }
