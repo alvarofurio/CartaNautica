@@ -681,8 +681,8 @@ public class SolveProblemController implements Initializable {
     
     @FXML
     private void ZoomShortCut(KeyEvent event) {
-        if (new KeyCharacterCombination("+", KeyCombination.CONTROL_ANY).match(event)) zoomIn((new ActionEvent()));
-        if (new KeyCharacterCombination("-", KeyCombination.CONTROL_ANY).match(event)) zoomOut((new ActionEvent()));
+        if ((new KeyCharacterCombination("+", KeyCombination.CONTROL_ANY)).match(event)) zoomIn((new ActionEvent()));
+        if ((new KeyCharacterCombination("-", KeyCombination.CONTROL_ANY)).match(event)) zoomOut((new ActionEvent()));
     }
     
     
@@ -710,8 +710,8 @@ public class SolveProblemController implements Initializable {
         
         Scene scene = new Scene(root,780,700);
         Stage stage = new Stage();
-        stage.setMinWidth(700); stage.setMinHeight(835);
-        stage.setMaxWidth(700); stage.setMaxHeight(835);
+        stage.setMinWidth(700); stage.setMinHeight(860);
+        stage.setMaxWidth(700); stage.setMaxHeight(860);
         stage.setResizable(false);
         stage.setScene(scene);
         stage.setTitle("Carta Náutica -  Información");

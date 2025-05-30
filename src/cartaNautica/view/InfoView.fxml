@@ -48,7 +48,7 @@
                         <Image url="@../../resources/iconoPunto.png" />
                      </image>
                   </ImageView>
-                  <Label text="La herramienta Punto te permite dibujar puntos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo sobre el mapa." textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" wrapText="true" />
+                  <Label fx:id="puntoLabel" text="La herramienta Punto te permite dibujar puntos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo sobre el mapa." textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -62,7 +62,7 @@
                         <Image url="@../../resources/iconoRecta.png" />
                      </image>
                   </ImageView>
-                  <Label text="La herramienta Recta te permite dibujar rectas sobre la carta náutica. Para ello, tras seleccionar la herramienta, haz clic izquierdo donde quieras iniciar la recta, arrastra el ratón manteniendo el clic hasta el extremo donde quieras finalizarla y suelta el botón." textAlignment="JUSTIFY" wrapText="true" />
+                  <Label fx:id="rectaLabel" text="La herramienta Recta te permite dibujar rectas sobre la carta náutica. Para ello, tras seleccionar la herramienta, haz clic izquierdo donde quieras iniciar la recta, arrastra el ratón manteniendo el clic hasta el extremo donde quieras finalizarla y suelta el botón." textAlignment="JUSTIFY" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -76,7 +76,7 @@
                         <Image url="@../../resources/iconoArco.png" />
                      </image>
                   </ImageView>
-                  <Label text="La herramienta Arco te permite dibujar arcos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo donde quieras posicionar el centro del arco, arrastra manteniendo el clic para elegir el radio y orientación del arco y suelta para fijar el arco." textAlignment="JUSTIFY" wrapText="true" />
+                  <Label fx:id="arcLabel" text="La herramienta Arco te permite dibujar arcos sobre la carta náutica. Para ello, tras seleccionar la herramienta, realiza clic izquierdo donde quieras posicionar el centro del arco, arrastra manteniendo el clic para elegir el radio y orientación del arco y suelta para fijar el arco." textAlignment="JUSTIFY" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -90,7 +90,7 @@
                         <Image url="@../../resources/iconoLatLong.png" />
                      </image>
                   </ImageView>
-                  <Label text="La herramienta Coordenadas te permite conocer las coordenadas de un punto sobre el mapa. Para ello, tras seleccionar la herramienta, haz clic izquierdo sobre el punto del que quieras conocer su latitud y longitud: se dibujarán dos rectas que cortarán perpendicularmente los bordes de la carta, cortando la latitud en la escala vertical y la longitud en la escala horizontal." textAlignment="JUSTIFY" wrapText="true" />
+                  <Label fx:id="extLabel" text="La herramienta Coordenadas te permite conocer las coordenadas de un punto sobre el mapa. Para ello, tras seleccionar la herramienta, haz clic izquierdo sobre el punto del que quieras conocer su latitud y longitud: se dibujarán dos rectas que cortarán perpendicularmente los bordes de la carta, cortando la latitud en la escala vertical y la longitud en la escala horizontal." textAlignment="JUSTIFY" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -104,7 +104,7 @@
                         <Image url="@../../resources/iconoTexto.png" />
                      </image>
                   </ImageView>
-                  <Label text="La herramienta Texto te permite escribir cuadros de texto sobre la carta náutica. Para ello, tras seleccionar la herramienta, haz clic izquierdo donde quieras posicionar el texto y empieza a escribir. Podrás editar el contenido del cuadro de texto siempre que quieras." textAlignment="JUSTIFY" wrapText="true" />
+                  <Label fx:id="textLabel" text="La herramienta Texto te permite escribir cuadros de texto sobre la carta náutica. Para ello, tras seleccionar la herramienta, haz clic izquierdo donde quieras posicionar el texto y empieza a escribir. Podrás editar el contenido del cuadro de texto siempre que quieras." textAlignment="JUSTIFY" wrapText="true" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -118,7 +118,7 @@
                         <Image url="@../../resources/iconoTransportador.png" />
                      </image>
                   </ImageView>
-                  <Label text="Muestra un transportador sobre la carta náutica para medir ángulos." />
+                  <Label fx:id="protractorLabel" text="Muestra un transportador sobre la carta náutica para medir ángulos." />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -132,7 +132,7 @@
                         <Image url="@../../resources/iconoRegla.png" />
                      </image>
                   </ImageView>
-                  <Label text="Muestra una regla sobre la carta náutica para tomar distancias en el mapa. Esta regla se puede rotar." />
+                  <Label fx:id="reglaLabel" text="Muestra una regla sobre la carta náutica para tomar distancias en el mapa. Esta regla se puede rotar." />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -146,7 +146,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="479.0" text="El apartado estilo permite modificar las características de color y tamaño de las distintas herramientas." textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="estiloLabel" maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="479.0" text="El apartado estilo permite modificar las características de color y tamaño de las distintas herramientas." textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
@@ -160,7 +160,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="479.0" text="Utiliza clic derecho sobre las distintas marcas hechas en la carta náutica para modificar su estilo o borrarlas. Utiliza CTRL y +/- para aumentar/disminuir el zoom en la carta náutica." textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="atajosLabel" maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="479.0" text="Utiliza clic derecho sobre las distintas marcas hechas en la carta náutica para modificar su estilo o borrarlas. Utiliza CTRL y +/- para aumentar/disminuir el zoom en la carta náutica." textAlignment="JUSTIFY" wrapText="true" HBox.hgrow="ALWAYS" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
