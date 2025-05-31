@@ -92,6 +92,7 @@ public class Info1Controller implements Initializable {
         
         infoToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             videoViewer.setMediaPlayer(null);
+                            
             if (newValue == null) {
                 //No tiene que hacer nada: Ya lo hace el Binding
             } else if (newValue.equals(pointButton)) {
@@ -103,7 +104,8 @@ public class Info1Controller implements Initializable {
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
-
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(lineButton)) {
                 titleLabel.setText("Recta");
@@ -114,7 +116,8 @@ public class Info1Controller implements Initializable {
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
-
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(arcButton)) {
                 titleLabel.setText("Arco");
@@ -126,6 +129,7 @@ public class Info1Controller implements Initializable {
 
                 videoViewer.setMediaPlayer(mediaPlayer);
 
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(positionButton)) {
                 titleLabel.setText("Coordenadas");
@@ -136,6 +140,8 @@ public class Info1Controller implements Initializable {
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(transButton)) {
                 titleLabel.setText("Transportador");
@@ -146,6 +152,8 @@ public class Info1Controller implements Initializable {
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(reglaButton)) {
                 titleLabel.setText("Regla");
@@ -156,6 +164,8 @@ public class Info1Controller implements Initializable {
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(estiloButton)) {
                 titleLabel.setText("Estilo");
@@ -166,6 +176,8 @@ public class Info1Controller implements Initializable {
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
 
                 videoViewer.setMediaPlayer(mediaPlayer);
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            } else if (newValue.equals(atajosButton)) {
                 titleLabel.setText("Atajos");
@@ -175,6 +187,8 @@ public class Info1Controller implements Initializable {
 
                 MediaPlayer mediaPlayer = new MediaPlayer(media);
                 videoViewer.setMediaPlayer(mediaPlayer);
+                
+                mediaPlayer.setMute(true);
                 mediaPlayer.play();
            }
         });

@@ -336,6 +336,9 @@
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </Button>
             <Region prefHeight="17.0" prefWidth="700.0" />
          </children>

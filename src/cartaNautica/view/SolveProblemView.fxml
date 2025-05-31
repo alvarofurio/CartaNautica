@@ -300,7 +300,7 @@
                   <children>
                      <Label fx:id="enunciadoLabel" textOverrun="WORD_ELLIPSIS" wrapText="true" VBox.vgrow="ALWAYS" />
                      <Region prefHeight="23.0" prefWidth="219.0" />
-                     <RadioButton fx:id="respuesta1" mnemonicParsing="false">
+                     <RadioButton fx:id="respuesta1" mnemonicParsing="false" textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" wrapText="true">
                         <toggleGroup>
                            <ToggleGroup fx:id="respuestas" />
                         </toggleGroup>
@@ -308,15 +308,15 @@
                            <Cursor fx:constant="HAND" />
                         </cursor>
                      </RadioButton>
-                     <RadioButton fx:id="respuesta2" mnemonicParsing="false" toggleGroup="$respuestas">
+                     <RadioButton fx:id="respuesta2" mnemonicParsing="false" textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" toggleGroup="$respuestas" wrapText="true">
                         <cursor>
                            <Cursor fx:constant="HAND" />
                         </cursor></RadioButton>
-                     <RadioButton fx:id="respuesta3" mnemonicParsing="false" toggleGroup="$respuestas">
+                     <RadioButton fx:id="respuesta3" mnemonicParsing="false" textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" toggleGroup="$respuestas" wrapText="true">
                         <cursor>
                            <Cursor fx:constant="HAND" />
                         </cursor></RadioButton>
-                     <RadioButton fx:id="respuesta4" mnemonicParsing="false" toggleGroup="$respuestas">
+                     <RadioButton fx:id="respuesta4" mnemonicParsing="false" textAlignment="JUSTIFY" textOverrun="WORD_ELLIPSIS" toggleGroup="$respuestas" wrapText="true">
                         <cursor>
                            <Cursor fx:constant="HAND" />
                         </cursor></RadioButton>

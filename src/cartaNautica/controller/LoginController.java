@@ -98,10 +98,6 @@ public class LoginController implements Initializable {
         passwordField.setOnKeyPressed(this::pressEnter);
         passwordVisibleField.setOnKeyPressed(this::pressEnter);
         
-        // para testear
-        nicknameField.setText("user1");
-        passwordField.setText("User123!");
-        
     }
     
     /**

@@ -102,7 +102,7 @@ public class PoiUPVApp extends Application {
                 return ;
             }
         }
-        //guardarSesion();
+        guardarSesion();
         
     }
     
