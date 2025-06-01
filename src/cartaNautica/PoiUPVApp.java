@@ -84,7 +84,7 @@ public class PoiUPVApp extends Application {
     }
     
     public static void guardarSesion(){
-        currentUser.addSession(aciertos,fallos);
+        if (currentUser != null) currentUser.addSession(aciertos,fallos);
         currentUser = null;
         aciertos = 0; fallos = 0;
     }
